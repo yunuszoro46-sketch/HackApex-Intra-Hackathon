@@ -8,6 +8,7 @@ The brief (`Who_Stays_On_Problem_Statement.pdf`), the judging criteria, and `inp
 
 ```
 public/index.html, app.js, styles.css      screen; fetch POST /api/roster (same endpoint as any caller)
+public/form.js                             form <-> request JSON (formToRequest / requestToForm); pure, also run by the tests
 src/server.js                              node:http; static files; 1 MB body limit; 200 / 400 / 405 / 404 / 500
 src/cli.js                                 same pipeline from the command line (exit 0 ok/infeasible, 1 invalid)
 src/solver/index.js   roster(input) = validate -> model -> solveMaxValue -> [diagnose] -> serialize -> checkRoster

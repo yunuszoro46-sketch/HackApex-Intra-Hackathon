@@ -21,21 +21,67 @@
     </div>
   </header>
 
-  <section class="panel no-print" aria-labelledby="input-h">
+  <form id="plan" class="panel no-print" aria-labelledby="input-h" novalidate>
     <div class="panel-head">
-      <h2 id="input-h">Today's situation <span class="muted">(input JSON)</span></h2>
+      <h2 id="input-h">Today's situation</h2>
       <div class="row">
-        <input type="file" id="file" class="visually-hidden" accept=".json,application/json">
-        <label class="btn file" for="file">Upload file</label>
         <button type="button" id="btn-sample">Load the sample (Shapla, Thursday)</button>
-        <button type="button" id="btn-compute" class="primary">Compute roster</button>
+        <button type="button" id="btn-clear">Clear form</button>
+        <button type="submit" id="btn-compute" class="primary">Generate roster</button>
       </div>
     </div>
-    <label for="input" class="muted small">Paste the JSON here, or upload a file. The server checks it and names any field that is wrong.</label>
-    <textarea id="input" spellcheck="false" placeholder='{ "grid_available": [...], "generator_capacity_kw": 20, ... }'></textarea>
-  </section>
+    <div id="form-errors" class="form-errors" role="alert" hidden></div>
 
-  <div id="stale" class="stale-note no-print" role="status" hidden>The input has changed since this result was computed. The result below belongs to the previous input. Press <b>Compute roster</b> to recalculate.</div>
+    <fieldset class="sec" data-field="generator">
+      <legend>A. Generator</legend>
+      <div class="fields">
+        <label class="field" data-field="generator_capacity_kw">Capacity
+          <span class="unit-input"><input id="f-capacity" inputmode="numeric" autocomplete="off" aria-describedby="h-capacity"><span>kW</span></span>
+          <small id="h-capacity">The most the generator carries in any hour, all powered shops together.</small></label>
+        <label class="field" data-field="fuel_budget_litres">Diesel budget
+          <span class="unit-input"><input id="f-budget" inputmode="decimal" autocomplete="off" aria-describedby="h-budget"><span>L</span></span>
+          <small id="h-budget">Diesel for the whole day, at most two decimals.</small></label>
+        <label class="field" data-field="max_consecutive_dark">Max dark hours in a row
+          <span class="unit-input"><input id="f-maxdark" inputmode="numeric" autocomplete="off" aria-describedby="h-maxdark"><span>h</span></span>
+          <small id="h-maxdark">A normal shop may be dark this many outage hours in a row, never more. A grid hour resets the count.</small></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="sec" data-field="grid_available">
+      <legend>B. Grid schedule <span class="muted small" id="grid-summary"></span></legend>
+      <p class="muted small">Press an hour to switch it between <b>grid</b> (mains power, everyone on, nothing to plan) and <b>outage</b> (the generator decides).</p>
+      <div id="grid" class="grid-toggles" role="group" aria-label="Grid power by hour"></div>
+    </fieldset>
+
+    <fieldset class="sec" data-field="fuel_table">
+      <legend>C. Fuel table</legend>
+      <p class="muted small">Each outage hour, all powered shops' kW are added up and rounded up to the first row whose load is at least that much; that row's litres are charged once for the hour. Zero load uses no diesel. Loads must increase down the table and the last load must equal the generator capacity.</p>
+      <div class="scroll"><table class="edit" id="fuel-table"><thead><tr><th scope="col">Up to load (kW)</th><th scope="col">Litres per hour</th><th scope="col"><span class="visually-hidden">Remove</span></th></tr></thead><tbody></tbody></table></div>
+      <button type="button" id="btn-add-fuel" class="small-btn">Add fuel row</button>
+    </fieldset>
+
+    <fieldset class="sec" data-field="shops">
+      <legend>D. Shops <span class="muted small" id="shop-summary"></span></legend>
+      <p class="muted small"><b>Mandatory</b> shops (marked ★) are on in every outage hour. Values are what it is worth to have the shop on in each hour (whole numbers, 0 or more). At most 12 shops.</p>
+      <div class="scroll" tabindex="0" role="region" aria-label="Shop table, scrolls sideways"><table class="edit" id="shop-table"><thead><tr><th scope="col" class="name">Shop ID</th><th scope="col">kW</th><th scope="col">Type</th></tr></thead><tbody></tbody></table></div>
+      <button type="button" id="btn-add-shop" class="small-btn">Add shop</button>
+    </fieldset>
+
+    <details class="sec json-tools">
+      <summary>JSON import and export (optional)</summary>
+      <p class="muted small">Fill the form from a JSON input file, or save the form as the JSON request the server receives.</p>
+      <div class="row">
+        <input type="file" id="file" class="visually-hidden" accept=".json,application/json">
+        <label class="btn file" for="file">Import JSON file</label>
+        <button type="button" id="btn-import-text">Fill form from pasted JSON</button>
+        <button type="button" id="btn-export">Download request JSON</button>
+      </div>
+      <label for="input" class="muted small">Paste input JSON here:</label>
+      <textarea id="input" spellcheck="false" placeholder='{ "grid_available": [...], "generator_capacity_kw": 20, ... }'></textarea>
+    </details>
+  </form>
+
+  <div id="stale" class="stale-note no-print" role="status" hidden>The form has changed since this result was computed. The result below belongs to the previous input. Press <b>Generate roster</b> to recalculate.</div>
 
   <section id="result" hidden aria-labelledby="board-title">
     <div id="metrics" class="metrics"></div>
@@ -77,6 +123,7 @@
   </section>
 
   <footer class="muted small no-print">This screen calls <code>POST /api/roster</code>, the same endpoint any market can use. Nothing here computes the roster, and nothing loads from the internet.</footer>
+  <script src="/form.js"></script>
   <script src="/app.js"></script>
 </body>
 </html>

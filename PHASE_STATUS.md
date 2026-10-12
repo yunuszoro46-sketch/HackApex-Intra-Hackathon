@@ -13,7 +13,19 @@
 
 ## Tests actually run
 
-**`npm test`:** 32 tests, 32 pass, 0 fail, 0 skipped, about 8 s (Node 22.22.0).
+**`npm test`:** 39 tests, 39 pass, 0 fail, 0 skipped, about 8 s (Node 22.22.0).
+
+**Manual input form (12 Oct 2026, about 13:05-13:40):** the JSON box was replaced by a form (`public/form.js` + `app.js`); JSON import/export kept under "JSON import and export". No solver, API or output change.
+
+- Before and after: `npm test` 32/32 → 39/39 (7 new form tests); `sh evidence/run.sh` 4/4 HTTP 200 with the committed files unchanged; `sh outputs/make.sh` gives the same `outputs/sample_output.json` (identical md5).
+- Browser (headless Chromium, Playwright scratch script, 1400 px and 390 px, light and dark): **28 of 28 checks passed**, among them:
+  - empty form blocks Generate and lists the fields, with no request sent; non-numeric text is blocked the same way;
+  - the sample fills the form (20 kW, 17 L, 7 outage hours, 12 shops, 2 mandatory) and gives 186 / 16.40 L, matching the API;
+  - toggling 16:00 by keyboard marks the result stale; Generate makes one new request and shows infeasible;
+  - a duplicate shop ID gets the server's 400, outlined on that field, with no board;
+  - add / remove shop, add shop disabled at 12; double-click sends one request; clear, refresh, paste-import (worked example → 84), import refused for unshowable JSON;
+  - request export equals the sample file; output download equals the API response; print is 1 A4 page;
+  - network failure → Try again recovers; no sideways page scroll at 390 px; only localhost requests; no unexpected console errors.
 
 **Submission audit (12 Oct 2026, about 11:20-11:45):**
 
@@ -34,6 +46,7 @@
 | `tests/solver.test.js` (8) | worked example 84 / 8.00 L; sample 186, checker-clean, under 10 s, reasons contain numbers; same input gives the same output; sample with a 16:00 outage is infeasible (needs 17.60 L) with a best-effort roster; no outages; no shops; **300 random small markets give the same value and the same feasibility as the brute-force oracle**; every reason's dark-streak and spare-diesel figures match an independent recount from the roster |
 | `tests/check_validate.test.js` (5) | the brief's published worked-example roster passes the checker; 8 broken copies and a 7.99 L budget are caught; 14 invalid inputs each name the right field; valid edge cases are accepted |
 | `tests/audit.test.js` (7) | see the audit note above |
+| `tests/form.test.js` (7) | form round trip (sample, worked example: identical request and identical API answer); slot order and booleans; strict number parsing (spaces ok, empty / non-numeric named); rule checks left to the server (negative, decimal, duplicate id → server 400 on that field); blank id; add/remove rows without changing the loaded sample; unshowable JSON refused on import |
 | `tests/api.test.js` (12, including the fuzz case 77 regression) | through HTTP: sample; non-JSON gives 400; budget boundary 17.60 ok / 17.59 infeasible; mandatory over capacity; mandatory-only diesel over budget; oversized shop in long vs short outage blocks; K = 0; K = 10; the regression input; adversarial 400s; 405 and 404 |
 
 **Manual checks:**

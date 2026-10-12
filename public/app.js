@@ -1,7 +1,8 @@
 'use strict';
-// The screen. It sends the input JSON to POST /api/roster (the same endpoint any market can call) and draws the
-// response. It never computes or changes the roster; the only arithmetic here is formatting and summing numbers
-// that the response already contains (peak load, remaining diesel, total dark hours).
+// The screen. The user fills a form; public/form.js turns it into the same input JSON the API has always taken,
+// which is sent to POST /api/roster (the same endpoint any market can call), and the response is drawn. The screen
+// never computes or changes the roster; the only arithmetic here is formatting and summing numbers that the
+// response already contains (peak load, remaining diesel, total dark hours).
 
 const $ = (id) => document.getElementById(id);
 const SLOTS = 10;
@@ -22,7 +23,8 @@ const KINDS = [
 ];
 const kindOf = (reason) => KINDS.find((k) => k.test.test(reason)) || { code: '?', name: 'Unlabelled' };
 
-const state = { input: null, inputText: '', response: null, raw: '', httpStatus: 0, filter: 'all' };
+const F = window.WSOForm;
+const state = { form: F.emptyForm(), sentForm: '', input: null, response: null, raw: '', httpStatus: 0, filter: 'all', busy: false };
 
 async function postRoster(text) {
   const res = await fetch('/api/roster', { method: 'POST', headers: { 'content-type': 'application/json' }, body: text });
@@ -35,22 +37,35 @@ async function postRoster(text) {
 function setStatus(kind, text) { $('status').innerHTML = `<span class="chip ${kind}">${esc(text)}</span>`; }
 
 async function compute() {
-  const text = $('input').value.trim();
-  if (!text) { showError('There is no input yet. Load the sample, upload a file, or paste the JSON.', false); return; }
+  if (state.busy) return;                                   // a second click while a request runs does nothing
+  clearFieldErrors();
+  const built = F.formToRequest(state.form);
+  if (built.errors) { showFormErrors(built.errors, 'Fix these fields before generating a roster:'); return; }
+  const text = JSON.stringify(built.request);
+  state.busy = true;
   setStatus('loading', 'Computing…');
   $('btn-compute').disabled = true; $('btn-compute').textContent = 'Computing…';
   if (state.response) $('result').classList.add('stale');
   $('result').setAttribute('aria-busy', 'true');
   try {
     const { httpStatus, body, raw } = await postRoster(text);
-    state.response = body; state.raw = raw; state.httpStatus = httpStatus; state.inputText = text; state.filter = 'all';
-    try { state.input = JSON.parse(text); } catch { state.input = null; }
+    state.response = body; state.raw = raw; state.httpStatus = httpStatus; state.filter = 'all';
+    state.input = built.request; state.sentForm = JSON.stringify(state.form);
     render();
+    // Bring the answer into view when it lands below the form (the form is long); invalid input stays on the form.
+    if ((body.status === 'ok' || body.status === 'infeasible') && $('result').getBoundingClientRect().top > innerHeight * 0.6) {
+      $('result').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
+    if (body.status === 'invalid_input') {
+      markField(body.field);
+      showFormErrors([{ field: body.field, message: body.message }], 'The server rejected this input (nothing was computed):');
+    }
   } catch (e) {
     state.response = null; state.raw = '';
     showError(`The roster could not be fetched: ${e.message}. Check that the server is running (npm start), then try again.`, true);
   } finally {
-    $('btn-compute').disabled = false; $('btn-compute').textContent = 'Compute roster';
+    state.busy = false;
+    $('btn-compute').disabled = false; $('btn-compute').textContent = 'Generate roster';
     $('result').removeAttribute('aria-busy');
     markStale();
   }
@@ -66,9 +81,9 @@ function showError(text, retry) {
   $('btn-download').disabled = true; $('btn-print').disabled = true;
 }
 
-// The shown result is stale once the text box no longer holds the input it was computed from.
+// The shown result is stale once the form no longer holds the input it was computed from.
 function markStale() {
-  const stale = !!state.response && $('input').value.trim() !== state.inputText;
+  const stale = !!state.response && JSON.stringify(state.form) !== state.sentForm;
   $('stale').hidden = !stale;
   $('result').classList.toggle('stale', stale);
 }
@@ -250,24 +265,174 @@ function select(slot, id) {
   if (li) { li.classList.add('sel'); li.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
 }
 
-$('btn-compute').addEventListener('click', compute);
-$('input').addEventListener('input', markStale);
+// ---------- The input form ----------
+
+const SHOP_LIMIT_HINT = 12;   // the brief's limit; the server still decides (more than 12 is invalid_input there)
+
+function renderForm() {
+  const f = state.form;
+  $('f-capacity').value = f.capacity; $('f-budget').value = f.budget; $('f-maxdark').value = f.maxDark;
+  renderGrid(); renderFuel(); renderShops();
+}
+
+function renderGrid() {
+  const f = state.form;
+  $('grid').innerHTML = F.HOURS.map((t, h) => {
+    const out = f.grid[h] === false;
+    return `<button type="button" class="hour ${out ? 'out' : 'on'}" data-hour="${h}" data-field="grid_available[${h}]" aria-pressed="${out}" aria-label="${t} ${out ? 'outage' : 'grid'}"><b>${t}</b><span>${out ? 'Outage' : 'Grid'}</span></button>`;
+  }).join('');
+  const n = f.grid.filter((g) => g === false).length;
+  $('grid-summary').textContent = `· ${n} outage hour${n === 1 ? '' : 's'}`;
+}
+
+function renderFuel() {
+  const rows = state.form.fuel;
+  $('fuel-table').tBodies[0].innerHTML = rows.map((r, i) => `<tr>
+    <td><input data-bind="fuel.${i}.kw" data-field="fuel_table[${i}].load_kw" inputmode="numeric" aria-label="Row ${i + 1}: up to load, kW" value="${esc(r.kw)}"></td>
+    <td><input data-bind="fuel.${i}.litres" data-field="fuel_table[${i}].litres_per_hour" inputmode="decimal" aria-label="Row ${i + 1}: litres per hour" value="${esc(r.litres)}"></td>
+    <td><button type="button" class="icon-btn" data-remove-fuel="${i}" aria-label="Remove fuel row ${i + 1}" ${rows.length <= 1 ? 'disabled' : ''}>Remove</button></td></tr>`).join('');
+}
+
+function renderShops() {
+  const shops = state.form.shops;
+  const head = $('shop-table').tHead.rows[0];
+  if (head.cells.length === 3) head.insertAdjacentHTML('beforeend', F.HOURS.map((t) => `<th scope="col">${t}</th>`).join('') + '<th scope="col"><span class="visually-hidden">Remove</span></th>');
+  $('shop-table').tBodies[0].innerHTML = shops.length ? shops.map((s, i) => `<tr class="${s.type === 'mandatory' ? 'mand' : ''}" data-shop="${i}">
+    <th scope="row" class="name"><span class="star" aria-hidden="true">★</span><input data-bind="shop.${i}.id" data-field="shops[${i}].id" aria-label="Shop ${i + 1}: ID" value="${esc(s.id)}"></th>
+    <td><input class="num" data-bind="shop.${i}.kw" data-field="shops[${i}].kw" inputmode="numeric" aria-label="Shop ${i + 1}: kW" value="${esc(s.kw)}"></td>
+    <td><select data-bind="shop.${i}.type" data-field="shops[${i}].type" aria-label="Shop ${i + 1}: type">
+      <option value="normal" ${s.type === 'normal' ? 'selected' : ''}>Normal</option><option value="mandatory" ${s.type === 'mandatory' ? 'selected' : ''}>Mandatory ★</option></select></td>
+    ${s.values.map((v, h) => `<td><input class="num" data-bind="shop.${i}.values.${h}" data-field="shops[${i}].value_per_slot[${h}]" inputmode="numeric" aria-label="Shop ${i + 1}: value at ${F.HOURS[h]}" value="${esc(v)}"></td>`).join('')}
+    <td><button type="button" class="icon-btn" data-remove-shop="${i}" aria-label="Remove shop ${i + 1}">Remove</button></td></tr>`).join('')
+    : `<tr><td colspan="${4 + F.SLOTS}" class="empty">No shops yet. Press <b>Add shop</b>, or load the sample.</td></tr>`;
+  const m = shops.filter((s) => s.type === 'mandatory').length;
+  $('shop-summary').textContent = `· ${shops.length} shop${shops.length === 1 ? '' : 's'}, ${m} mandatory`;
+  $('btn-add-shop').disabled = shops.length >= SHOP_LIMIT_HINT;
+}
+
+// Every input carries data-bind="path"; typing writes the text straight into state.form (nothing parsed yet).
+function bindValue(el) {
+  const path = el.dataset.bind.split('.'), f = state.form;
+  if (path[0] === 'fuel') f.fuel[+path[1]][path[2]] = el.value;
+  else if (path[0] === 'shop') {
+    const s = f.shops[+path[1]];
+    if (path[2] === 'values') s.values[+path[3]] = el.value; else s[path[2]] = el.value;
+    if (path[2] === 'type') { el.closest('tr').classList.toggle('mand', el.value === 'mandatory'); renderShopSummary(); }
+  }
+  el.classList.remove('invalid'); el.removeAttribute('aria-invalid');
+}
+function renderShopSummary() {
+  const shops = state.form.shops, m = shops.filter((s) => s.type === 'mandatory').length;
+  $('shop-summary').textContent = `· ${shops.length} shop${shops.length === 1 ? '' : 's'}, ${m} mandatory`;
+}
+
+const formChanged = () => markStale();
+$('plan').addEventListener('submit', (e) => { e.preventDefault(); compute(); });
+$('plan').addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.id === 'f-capacity') state.form.capacity = el.value;
+  else if (el.id === 'f-budget') state.form.budget = el.value;
+  else if (el.id === 'f-maxdark') state.form.maxDark = el.value;
+  else if (el.dataset.bind) bindValue(el);
+  else return;                                              // the JSON paste box does not change the form
+  el.classList.remove('invalid'); el.removeAttribute('aria-invalid');
+  formChanged();
+});
+$('plan').addEventListener('change', (e) => { if (e.target.tagName === 'SELECT' && e.target.dataset.bind) { bindValue(e.target); formChanged(); } });
+$('grid').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-hour]'); if (!b) return;
+  const h = +b.dataset.hour;
+  state.form.grid[h] = state.form.grid[h] === false;       // grid (true) <-> outage (false)
+  renderGrid(); $('grid').querySelector(`[data-hour="${h}"]`).focus(); formChanged();
+});
+$('btn-add-fuel').addEventListener('click', () => { state.form.fuel.push({ kw: '', litres: '' }); renderFuel(); formChanged(); $('fuel-table').querySelector(`[data-bind="fuel.${state.form.fuel.length - 1}.kw"]`).focus(); });
+$('fuel-table').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-remove-fuel]'); if (!b || state.form.fuel.length <= 1) return;
+  state.form.fuel.splice(+b.dataset.removeFuel, 1); renderFuel(); formChanged();
+});
+$('btn-add-shop').addEventListener('click', () => {
+  state.form.shops.push(F.emptyShop()); renderShops(); formChanged();
+  $('shop-table').querySelector(`[data-bind="shop.${state.form.shops.length - 1}.id"]`).focus();
+});
+$('shop-table').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-remove-shop]'); if (!b) return;
+  state.form.shops.splice(+b.dataset.removeShop, 1); renderShops(); formChanged();
+});
+
+// Errors: a list at the top of the form (each item jumps to its field) plus a red outline on the field itself.
+function clearFieldErrors() {
+  $('form-errors').hidden = true; $('form-errors').innerHTML = '';
+  document.querySelectorAll('#plan .invalid').forEach((el) => { el.classList.remove('invalid'); el.removeAttribute('aria-invalid'); });
+}
+// Finds the control for a field name such as "shops[2].value_per_slot[4]"; falls back to the nearest named parent
+// ("shops[2].value_per_slot", then "shops[2]", then "shops").
+function fieldElement(field) {
+  let f = String(field || '');
+  while (f) {
+    const el = document.querySelector(`#plan [data-field="${CSS.escape(f)}"]`);
+    if (el) return el;
+    const cut = Math.max(f.lastIndexOf('.'), f.lastIndexOf('['));
+    f = cut > 0 ? f.slice(0, cut) : '';
+  }
+  return null;
+}
+function markField(field) {
+  const el = fieldElement(field); if (!el) return null;
+  const target = el.matches('input, select, button') ? el : (el.querySelector('input, select') || el);
+  target.classList.add('invalid'); target.setAttribute('aria-invalid', 'true');
+  return target;
+}
+function showFormErrors(errors, title) {
+  errors.forEach((er) => markField(er.field));
+  const shown = errors.slice(0, 8);
+  $('form-errors').innerHTML = `<b>${esc(title)}</b><ul>${shown.map((er, i) => `<li><a href="#" data-err="${i}">${esc(er.message)}</a>${er.field ? ` <code>${esc(er.field)}</code>` : ''}</li>`).join('')}</ul>${errors.length > shown.length ? `<p>…and ${errors.length - shown.length} more.</p>` : ''}`;
+  $('form-errors').hidden = false;
+  $('form-errors').querySelectorAll('a[data-err]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault(); const el = markField(shown[+a.dataset.err].field); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); }
+  }));
+  const first = markField(errors[0].field);
+  if (first && first.focus) first.focus({ preventScroll: true });
+  $('form-errors').scrollIntoView({ block: 'nearest' });
+}
+
+function loadIntoForm(input, then) {
+  const r = F.requestToForm(input);
+  if (r.error) { showFormErrors([r.error], 'This JSON cannot be shown in the form:'); return false; }
+  state.form = r.form; clearFieldErrors(); renderForm(); markStale();
+  if (then) then();
+  return true;
+}
+
 $('btn-sample').addEventListener('click', async () => {
   try {
     const res = await fetch('/sample_input.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    $('input').value = await res.text(); compute();
+    loadIntoForm(JSON.parse(await res.text()), compute);
   } catch (e) { showError(`The sample could not be loaded: ${e.message}.`, false); }
 });
+$('btn-clear').addEventListener('click', () => { state.form = F.emptyForm(); clearFieldErrors(); renderForm(); markStale(); $('f-capacity').focus(); });
+function importText(text) {
+  let input;
+  try { input = JSON.parse(text); } catch (e) { showFormErrors([{ field: '', message: `Not valid JSON: ${e.message}` }], 'This JSON cannot be read:'); return; }
+  loadIntoForm(input, compute);
+}
 $('file').addEventListener('change', async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  $('input').value = await f.text(); e.target.value = ''; compute();
+  const text = await f.text(); e.target.value = ''; importText(text);
 });
-$('btn-download').addEventListener('click', () => {
-  if (!state.raw) return;
+$('btn-import-text').addEventListener('click', () => importText($('input').value));
+$('btn-export').addEventListener('click', () => {
+  clearFieldErrors();
+  const built = F.formToRequest(state.form);
+  if (built.errors) { showFormErrors(built.errors, 'Fix these fields before saving the request:'); return; }
+  saveFile(JSON.stringify(built.request, null, 2), 'roster_input.json');
+});
+function saveFile(text, name) {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([state.raw], { type: 'application/json' }));
-  a.download = `roster_output_${state.response && state.response.status}.json`;
-  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 0);
-});
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 0);
+}
+renderForm();
+
+$('btn-download').addEventListener('click', () => { if (state.raw) saveFile(state.raw, `roster_output_${state.response && state.response.status}.json`); });
 $('btn-print').addEventListener('click', () => window.print());

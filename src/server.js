@@ -8,7 +8,7 @@ const { rosterFromText } = require('./solver/index');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = path.join(__dirname, '..');
-const STATIC = { '/': 'public/index.html', '/index.html': 'public/index.html', '/app.js': 'public/app.js',
+const STATIC = { '/': 'public/index.html', '/index.html': 'public/index.html', '/app.js': 'public/app.js', '/form.js': 'public/form.js',
   '/styles.css': 'public/styles.css', '/sample_input.json': 'inputs/sample_input.json' };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8' };
 const MAX_BODY = 1024 * 1024;

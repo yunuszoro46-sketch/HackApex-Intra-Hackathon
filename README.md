@@ -14,6 +14,24 @@ Then open **http://localhost:3000**.
 - **Port:** 3000. Use `PORT=8080 npm start` to change it.
 - **Offline:** nothing is loaded from the internet, not even fonts.
 
+## Using the screen
+
+The screen is a form, so nobody needs to write JSON.
+
+1. **Load the sample (Shapla, Thursday)** fills the form with `inputs/sample_input.json` and generates its roster straight away. **Clear form** empties every field.
+2. Fill in or change the four sections:
+   - **A. Generator:** capacity (kW), diesel budget (litres, at most two decimals), and the most hours in a row a normal shop may be dark.
+   - **B. Grid schedule:** ten buttons, 10:00 to 19:00. Press an hour to switch it between grid (mains power, nothing to plan) and outage (the generator decides).
+   - **C. Fuel table:** one row per load level: "up to this many kW costs this many litres per hour". Each outage hour's total load is rounded up to the first row at or above it. Rows can be added or removed; the last load must equal the capacity.
+   - **D. Shops:** ID, kW, type (normal, or mandatory ★ = on in every outage hour) and a value for each of the ten hours. Up to 12 shops; add or remove rows.
+3. Press **Generate roster**.
+   - **OK** (green chip): the roster, totals, charts and a reason for every ✗.
+   - **Infeasible** (amber chip): which rule cannot be met, with numbers, plus a best-effort roster marked "NOT a valid roster".
+   - **Invalid input** (red chip): the server names the field, and the form outlines it in red. Nothing was computed.
+4. **Download output JSON** and **Print roster** are in the header. Under **JSON import and export** you can fill the form from a JSON file or pasted text, or save the form as the JSON request the server receives.
+
+**How the form becomes a request.** `public/form.js` turns the form into exactly the input JSON the API has always taken (`formToRequest`); the sample and the brief's worked example come back from the form byte-identical (`tests/form.test.js`). The form itself only stops what cannot be sent at all (an empty field, text that is not a number, a blank shop ID). Every rule (whole numbers, no negatives, unique IDs, the fuel-table rules, at most 12 shops) is still checked by the server, whose answer names the field.
+
 ## API
 
 `POST /api/roster` takes the input JSON as the request body and returns the output JSON. The screen uses this same endpoint.
@@ -49,7 +67,7 @@ node src/cli.js inputs/sample_input.json
 | Independent rule checker, run on every answer before it is sent | `src/solver/check.js` |
 | Pipeline used by the API and the CLI | `src/solver/index.js` |
 | HTTP server (`POST /api/roster` and the screen) | `src/server.js` |
-| Screen | `public/index.html`, `public/app.js`, `public/styles.css` (`app.js` calls `POST /api/roster`); design tokens and rules in `DESIGN_SYSTEM.md` |
+| Screen | `public/index.html`, `public/app.js`, `public/styles.css`; `public/form.js` converts the form to the request (`app.js` calls `POST /api/roster`); design tokens and rules in `DESIGN_SYSTEM.md` |
 
 ## How it decides (short version)
 
@@ -77,7 +95,7 @@ The solver plans the whole day at once, never hour by hour. Hour-by-hour greedy 
 npm test
 ```
 
-There are 32 tests, all using Node's built-in test runner:
+There are 39 tests, all using Node's built-in test runner:
 
 - the brief's worked example: value 84 using exactly 8.00 L, matching the brief;
 - the official sample: value 186;
@@ -85,7 +103,8 @@ There are 32 tests, all using Node's built-in test runner:
 - the independent checker against the brief's published roster and broken copies of it;
 - every invalid-input case;
 - HTTP boundary and adversarial cases;
-- fuel thresholds, grid resets of dark runs, and repeated requests.
+- fuel thresholds, grid resets of dark runs, and repeated requests;
+- the screen's form conversion (`tests/form.test.js`).
 
 A seeded random stress test on full-size inputs takes minutes, so it is not part of `npm test`:
 
