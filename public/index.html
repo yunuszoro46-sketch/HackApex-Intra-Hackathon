@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Who Stays On? Generator roster</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Who Stays On?</h1>
+      <p class="sub">Generator roster for load-shedding hours: which shops stay powered, how much diesel, and why each shop is dark.</p>
+    </div>
+    <div class="actions no-print">
+      <button type="button" id="btn-print" disabled>Print roster</button>
+      <button type="button" id="btn-download" disabled>Download output JSON</button>
+    </div>
+  </header>
+
+  <section class="panel no-print" aria-labelledby="input-h">
+    <h2 id="input-h">1. Today's situation (input JSON)</h2>
+    <div class="row">
+      <label class="file">Upload file <input type="file" id="file" accept=".json,application/json"></label>
+      <button type="button" id="btn-sample">Use the sample (Shapla, Thursday)</button>
+      <button type="button" id="btn-compute" class="primary">Compute roster</button>
+      <span id="busy" class="muted" hidden>Computing…</span>
+    </div>
+    <label for="input" class="muted">…or paste the JSON here:</label>
+    <textarea id="input" spellcheck="false" placeholder='{ "grid_available": [...], "generator_capacity_kw": 20, ... }'></textarea>
+  </section>
+
+  <section id="result" hidden>
+    <div id="summary" class="summary"></div>
+    <div id="problem"></div>
+    <div id="board-wrap">
+      <h2 id="board-title">2. Roster</h2>
+      <p class="legend"><span class="c on">✓</span> powered <span class="c off">✗</span> dark (hover or click for the reason) <span class="c grid">grid</span> mains power, nothing to decide <span class="star">★</span> mandatory</p>
+      <div class="scroll"><table id="board"></table></div>
+    </div>
+    <div id="reasons-wrap" class="no-print">
+      <h2>3. Why each shop is dark</h2>
+      <ol id="reasons"></ol>
+    </div>
+  </section>
+
+  <footer class="muted no-print">This screen calls <code>POST /api/roster</code>, the same endpoint any market can use. Runs fully offline.</footer>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@
 const { slotLabel } = require('./model');
 const L = (cents) => (cents / 100).toFixed(2);
 
-function reasonFor(model, shop, slot, hourLoad, totalCents, optimal) {
+function reasonFor(model, shop, slot, hourLoad, totalCents, optimal, bestEffort = false) {
   const t = slotLabel(slot);
   if (shop.kw > model.capacity) {
     return `Too big for the generator: needs ${shop.kw} kW, the generator carries ${model.capacity} kW. It can only run on grid power.`;
@@ -19,6 +19,11 @@ function reasonFor(model, shop, slot, hourLoad, totalCents, optimal) {
     return `Capacity: ${hourLoad} of ${model.capacity} kW already in use at ${t}; adding ${shop.kw} kW would make ${hourLoad + shop.kw} kW.`;
   }
   const before = model.fuelFor(hourLoad), after = model.fuelFor(hourLoad + shop.kw), extra = after - before;
+  if (bestEffort) {
+    // Least-diesel reference roster for an infeasible day: shops are dark only to save diesel.
+    return `Least-diesel plan: switching it on would lift ${t} from ${hourLoad} to ${hourLoad + shop.kw} kW (${L(before)} -> ${L(after)} L/h); `
+      + `even this plan needs ${L(totalCents)} L against the ${L(model.budget)} L budget.`;
+  }
   if (totalCents + extra > model.budget) {
     return `Diesel: switching it on lifts ${t} from ${hourLoad} to ${hourLoad + shop.kw} kW (${L(before)} -> ${L(after)} L/h), `
       + `so the day would need ${L(totalCents + extra)} L of the ${L(model.budget)} L budget; that diesel is used in other hours of the plan.`;

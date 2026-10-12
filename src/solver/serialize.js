@@ -7,7 +7,7 @@ const { reasonFor } = require('./explain');
 const litres = (cents) => Number((cents / 100).toFixed(2));
 
 // powered: array (one entry per outage slot) of Set(shop ids). Totals are recomputed from the roster itself.
-function rosterBody(model, powered, optimal) {
+function rosterBody(model, powered, optimal, bestEffort = false) {
   let running = 0, valueTotal = 0;
   const dark = Object.fromEntries(model.shops.map((s) => [s.id, 0]));
   const hours = model.outageSlots.map((slot, i) => {
@@ -23,7 +23,7 @@ function rosterBody(model, powered, optimal) {
     powered: on.map((s) => s.id),
     dark: model.shops.filter((s) => !on.includes(s)).map((s) => {
       dark[s.id] += 1;
-      return { id: s.id, reason: reasonFor(model, s, slot, load, running, optimal) };
+      return { id: s.id, reason: reasonFor(model, s, slot, load, running, optimal, bestEffort) };
     }),
     load_kw: load,
     fuel_litres: litres(fuel),
@@ -55,7 +55,7 @@ function infeasibleBody(model, conflicts, bestEffort) {
     body.best_effort = {
       label: bestEffort.label,
       breaks: bestEffort.breaks,
-      ...rosterBody(model, bestEffort.powered, true),
+      ...rosterBody(model, bestEffort.powered, true, true),
     };
   }
   return body;

@@ -1,0 +1,66 @@
+:root { --ink:#1d2329; --muted:#5f6b76; --line:#d5dbe1; --bg:#f6f7f9; --card:#fff; --on:#1b7f3b; --on-bg:#e6f4ea; --off:#b3261e; --off-bg:#fce8e6; --grid:#eef0f3; --accent:#0b5cad; --warn:#8a5a00; --warn-bg:#fff4dc; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--ink); background: var(--bg); padding: 16px 24px 40px; max-width: 1400px; margin-inline: auto; }
+h1 { margin: 0; font-size: 1.6rem; }
+h2 { font-size: 1.05rem; margin: 0 0 .6rem; }
+.sub, .muted { color: var(--muted); }
+.sub { margin: .2rem 0 0; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.actions { display: flex; gap: 8px; }
+.panel, .summary, #board-wrap, #reasons-wrap, .problem { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+button, .file { font: inherit; padding: 7px 14px; border-radius: 7px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+button:hover:not(:disabled), .file:hover { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.file input { display: none; }
+button:focus-visible, .file:focus-within, textarea:focus-visible, td:focus-visible { outline: 3px solid #8ab4f8; outline-offset: 2px; }
+textarea { width: 100%; min-height: 110px; font: 12.5px/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 7px; padding: 8px; }
+.summary { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+.stat b { display: block; font-size: 1.35rem; }
+.stat span { color: var(--muted); font-size: .85rem; }
+.pill { display: inline-block; padding: 3px 12px; border-radius: 99px; font-weight: 700; letter-spacing: .03em; }
+.pill.ok { background: var(--on-bg); color: var(--on); }
+.pill.infeasible { background: var(--warn-bg); color: var(--warn); }
+.pill.invalid_input, .pill.error { background: var(--off-bg); color: var(--off); }
+.problem { border-left: 5px solid var(--warn); }
+.problem.bad { border-left-color: var(--off); }
+.problem ul { margin: .4rem 0 0; padding-left: 1.2rem; }
+.banner { background: var(--warn-bg); color: var(--warn); border-radius: 7px; padding: 8px 12px; font-weight: 600; margin-bottom: 10px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 5px 6px; text-align: center; white-space: nowrap; }
+th { background: #f0f2f5; font-weight: 600; }
+td.name { text-align: left; font-weight: 600; }
+td.name small { color: var(--muted); font-weight: 400; }
+.star { color: #b07d00; }
+td.on, .c.on { background: var(--on-bg); color: var(--on); font-weight: 700; }
+td.off, .c.off { background: var(--off-bg); color: var(--off); font-weight: 700; cursor: pointer; }
+td.grid, .c.grid { background: var(--grid); color: var(--muted); font-size: 12px; }
+td.off.sel { outline: 3px solid var(--off); outline-offset: -3px; }
+tfoot td { font-size: 12.5px; background: #fafbfc; }
+tfoot td.label { text-align: left; font-weight: 600; }
+td.over { color: var(--off); font-weight: 700; }
+.legend { font-size: 13px; color: var(--muted); }
+.c { display: inline-block; padding: 0 6px; border-radius: 4px; margin-left: 6px; }
+#reasons { margin: 0; padding-left: 1.4rem; max-height: 420px; overflow: auto; }
+#reasons li { padding: 3px 0; }
+#reasons li.sel { background: var(--off-bg); border-radius: 4px; }
+#reasons .who { font-weight: 600; }
+code { background: #eef0f3; padding: 1px 5px; border-radius: 4px; }
+footer { margin-top: 20px; font-size: 13px; }
+
+/* Print: one A4 page for the generator-room door: summary, board, loads and fuel. Controls and the long reason list are left out. */
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  body { background: #fff; padding: 0; font-size: 11px; max-width: none; }
+  .no-print { display: none !important; }
+  .top { margin-bottom: 6px; }
+  h1 { font-size: 16px; } .sub { font-size: 10px; }
+  .summary, #board-wrap, .problem { border: 1px solid #999; padding: 6px 8px; margin-bottom: 6px; break-inside: avoid; }
+  .stat b { font-size: 13px; }
+  table { font-size: 10.5px; } th, td { padding: 2px 3px; }
+  td.on, td.off, td.grid, .pill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .scroll { overflow: visible; }
+  td.off.sel { outline: none; }
+}
