@@ -1,0 +1,14 @@
+Commit 41cf264 ("Screen: roster board ..."), server started with:  PORT=3301 node src/server.js
+Request:  curl -s -m 120 -X POST -H 'content-type: application/json' \
+            --data @evidence/regression/input_all_outage_small_shops.json localhost:3301/api/roster
+
+Result (captured 12 Oct 2026, 10:47):
+  curl: http_code=000, exit code 52 (empty reply from server) after 45 s
+  The server process was killed by the operating system for running out of memory:
+    "Memory cgroup out of memory: Killed process 710 (node) total-vm:6922208kB, anon-rss:5927000kB"
+  After that the server no longer answered at all (GET / -> no response).
+
+Cause: the exact search kept every non-dominated (diesel, value) pair for every dark-run state. With twelve small
+shops that all fit on the generator in every one of ten outage hours, almost every subset is allowed in every hour,
+so the number of kept pairs grew into the tens of millions and the process ran out of memory before answering.
+No body was returned, so there is no output JSON for this version.
