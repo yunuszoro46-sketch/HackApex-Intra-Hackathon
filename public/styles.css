@@ -43,7 +43,7 @@ tfoot td.label { text-align: left; font-weight: 600; }
 td.over { color: var(--off); font-weight: 700; }
 .legend { font-size: 13px; color: var(--muted); }
 .c { display: inline-block; padding: 0 6px; border-radius: 4px; margin-left: 6px; }
-#reasons { margin: 0; padding-left: 1.4rem; max-height: 420px; overflow: auto; }
+#reasons { margin: 0; padding-left: 2.2rem; max-height: 420px; overflow: auto; }
 #reasons li { padding: 3px 0; }
 #reasons li.sel { background: var(--off-bg); border-radius: 4px; }
 #reasons .who { font-weight: 600; }
