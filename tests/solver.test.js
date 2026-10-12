@@ -107,3 +107,29 @@ test('randomized: solver value equals brute-force optimum on 300 small markets, 
   }
   assert.ok(ok > 50 && infeasible > 10, `coverage ok=${ok} infeasible=${infeasible}`);
 });
+
+test('reasons state the real dark streak and limit, and diesel reasons state the real spare diesel', () => {
+  const input = load('inputs/sample_input.json');
+  const b = roster(input).body;
+  const K = input.max_consecutive_dark;
+  const streak = {}; let prev = null;
+  for (const h of b.roster) {
+    if (prev !== h.slot - 1) for (const id in streak) streak[id] = 0; // grid hour between resets
+    prev = h.slot;
+    for (const id of h.powered) streak[id] = 0;
+    for (const d of h.dark) {
+      streak[d.id] = (streak[d.id] || 0) + 1;
+      const m = d.reason.match(/Dark (\d+) hours? in a row so far \(limit (\d+)\)\.$/);
+      assert.ok(m, `streak missing: ${h.time} ${d.id}: ${d.reason}`);
+      assert.equal(Number(m[1]), streak[d.id], `${h.time} ${d.id}`);
+      assert.equal(Number(m[2]), K);
+      assert.ok(Number(m[1]) <= K);
+      const f = d.reason.match(/^Diesel: .*\+(\d+\.\d\d) L\)\. The plan uses (\d+\.\d\d) of the (\d+\.\d\d) L budget, leaving (\d+\.\d\d) L spare/);
+      if (f) {
+        assert.equal(f[2], b.fuel_total_litres.toFixed(2));
+        assert.equal(Number(f[4]), Number((Number(f[3]) - Number(f[2])).toFixed(2)));
+        assert.ok(Number(f[1]) > Number(f[4]), 'extra diesel must exceed the spare diesel');
+      }
+    }
+  }
+});

@@ -15,27 +15,27 @@
       "dark": [
         {
           "id": "mobile_shop",
-          "reason": "Diesel: switching it on lifts 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "beauty_salon",
-          "reason": "Diesel: switching it on lifts 12:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 12:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "grocery_fridge",
-          "reason": "Diesel: switching it on lifts 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "electronics",
-          "reason": "Diesel: switching it on lifts 12:00 from 14 to 19 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 12:00 from 14 to 19 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "restaurant",
-          "reason": "Diesel: switching it on lifts 12:00 from 14 to 20 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 12:00 from 14 to 20 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "jewellery",
-          "reason": "Diesel: switching it on lifts 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         }
       ],
       "load_kw": 14,
@@ -54,35 +54,35 @@
       "dark": [
         {
           "id": "tailor_jamal",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "photocopy",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 16 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "tea_stall",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 15 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 15 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "beauty_salon",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "grocery_fridge",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "electronics",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 19 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 19 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "jewellery",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "clothing",
-          "reason": "Diesel: switching it on lifts 13:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 16 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         }
       ],
       "load_kw": 14,
@@ -103,27 +103,27 @@
       "dark": [
         {
           "id": "tailor_jamal",
-          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 4 kW would make 24 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 4 kW would make 24 kW. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "mobile_shop",
-          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 3 kW would make 23 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 3 kW would make 23 kW. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "photocopy",
-          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 2 kW would make 22 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 2 kW would make 22 kW. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "tea_stall",
-          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 1 kW would make 21 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 1 kW would make 21 kW. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "restaurant",
-          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 6 kW would make 26 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 6 kW would make 26 kW. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "clothing",
-          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 2 kW would make 22 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 2 kW would make 22 kW. Dark 2 hours in a row so far (limit 2)."
         }
       ],
       "load_kw": 20,
@@ -144,27 +144,27 @@
       "dark": [
         {
           "id": "mobile_shop",
-          "reason": "Diesel: switching it on lifts 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "beauty_salon",
-          "reason": "Diesel: switching it on lifts 15:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 15:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "grocery_fridge",
-          "reason": "Diesel: switching it on lifts 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "electronics",
-          "reason": "Diesel: switching it on lifts 15:00 from 14 to 19 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 15:00 from 14 to 19 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "restaurant",
-          "reason": "Diesel: switching it on lifts 15:00 from 14 to 20 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 15:00 from 14 to 20 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "jewellery",
-          "reason": "Diesel: switching it on lifts 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         }
       ],
       "load_kw": 14,
@@ -183,35 +183,35 @@
       "dark": [
         {
           "id": "tailor_jamal",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "photocopy",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "tea_stall",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 15 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 15 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "beauty_salon",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "grocery_fridge",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "electronics",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 19 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 19 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "jewellery",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "clothing",
-          "reason": "Diesel: switching it on lifts 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         }
       ],
       "load_kw": 14,
@@ -232,27 +232,27 @@
       "dark": [
         {
           "id": "tailor_jamal",
-          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 4 kW would make 24 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 4 kW would make 24 kW. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "mobile_shop",
-          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 3 kW would make 23 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 3 kW would make 23 kW. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "photocopy",
-          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 2 kW would make 22 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 2 kW would make 22 kW. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "tea_stall",
-          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 1 kW would make 21 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 1 kW would make 21 kW. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "restaurant",
-          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 6 kW would make 26 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 6 kW would make 26 kW. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "clothing",
-          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 2 kW would make 22 kW."
+          "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 2 kW would make 22 kW. Dark 2 hours in a row so far (limit 2)."
         }
       ],
       "load_kw": 20,
@@ -273,27 +273,27 @@
       "dark": [
         {
           "id": "mobile_shop",
-          "reason": "Diesel: switching it on lifts 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "beauty_salon",
-          "reason": "Diesel: switching it on lifts 18:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 18:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "grocery_fridge",
-          "reason": "Diesel: switching it on lifts 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "electronics",
-          "reason": "Diesel: switching it on lifts 18:00 from 14 to 19 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 18:00 from 14 to 19 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "restaurant",
-          "reason": "Diesel: switching it on lifts 18:00 from 14 to 20 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 18:00 from 14 to 20 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "jewellery",
-          "reason": "Diesel: switching it on lifts 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         }
       ],
       "load_kw": 14,
@@ -312,35 +312,35 @@
       "dark": [
         {
           "id": "tailor_jamal",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "photocopy",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "tea_stall",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 15 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 15 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         },
         {
           "id": "beauty_salon",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 18 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 18 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "grocery_fridge",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "electronics",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 19 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 19 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "jewellery",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 17 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 2)."
         },
         {
           "id": "clothing",
-          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 18.40 L of the 17.60 L budget; that diesel is used in other hours of the plan."
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h, +0.80 L). The plan uses 17.60 of the 17.60 L budget, leaving 0.00 L spare, so the day would need 18.40 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 2)."
         }
       ],
       "load_kw": 14,

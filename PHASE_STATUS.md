@@ -13,11 +13,11 @@
 
 ## Tests actually run
 
-**`npm test`:** 23 tests, 23 pass, 0 fail, about 5.6 s (Node 22.22.0).
+**`npm test`:** 24 tests, 24 pass, 0 fail, 0 skipped, about 6 s (Node 22.22.0).
 
 | File | Tests |
 |---|---|
-| `tests/solver.test.js` (7) | worked example 84 / 8.00 L; sample 186, checker-clean, under 10 s, reasons contain numbers; same input gives the same output; sample with a 16:00 outage is infeasible (needs 17.60 L) with a best-effort roster; no outages; no shops; **300 random small markets give the same value and the same feasibility as the brute-force oracle** |
+| `tests/solver.test.js` (8) | worked example 84 / 8.00 L; sample 186, checker-clean, under 10 s, reasons contain numbers; same input gives the same output; sample with a 16:00 outage is infeasible (needs 17.60 L) with a best-effort roster; no outages; no shops; **300 random small markets give the same value and the same feasibility as the brute-force oracle**; every reason's dark-streak and spare-diesel figures match an independent recount from the roster |
 | `tests/check_validate.test.js` (5) | the brief's published worked-example roster passes the checker; 8 broken copies and a 7.99 L budget are caught; 14 invalid inputs each name the right field; valid edge cases are accepted |
 | `tests/api.test.js` (11) | through HTTP: sample; non-JSON gives 400; budget boundary 17.60 ok / 17.59 infeasible; mandatory over capacity; mandatory-only diesel over budget; oversized shop in long vs short outage blocks; K = 0; K = 10; the regression input; adversarial 400s; 405 and 404 |
 

@@ -40,7 +40,7 @@ This shows the diesel rule is applied in whole hundredths with no rounding toler
 
 ## 3. How we test in general
 
-- **`npm test`** runs 23 tests:
+- **`npm test`** runs 24 tests:
   - the brief's worked example: 84 at 8.00 L, matching the brief;
   - the official sample: 186;
   - 300 random small markets compared against an independent brute-force solver (`tools/brute.js`);

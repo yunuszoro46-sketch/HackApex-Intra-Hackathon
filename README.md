@@ -77,7 +77,7 @@ The solver plans the whole day at once, never hour by hour. Hour-by-hour greedy 
 npm test
 ```
 
-There are 23 tests, all using Node's built-in test runner:
+There are 24 tests, all using Node's built-in test runner:
 
 - the brief's worked example: value 84 using exactly 8.00 L, matching the brief;
 - the official sample: value 186;

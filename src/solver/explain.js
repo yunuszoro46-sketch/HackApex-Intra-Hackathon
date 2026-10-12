@@ -7,7 +7,15 @@
 const { slotLabel } = require('./model');
 const L = (cents) => (cents / 100).toFixed(2);
 
-function reasonFor(model, shop, slot, hourLoad, totalCents, optimal, bestEffort = false) {
+// streak = how many outage hours in a row this shop has been dark, counting this one (grid hours reset it).
+// It is appended to every reason so the reader can check the consecutive-dark rule (brief rule 5) directly.
+function reasonFor(model, shop, slot, hourLoad, totalCents, optimal, bestEffort = false, streak = null) {
+  const why = baseReason(model, shop, slot, hourLoad, totalCents, optimal, bestEffort);
+  if (streak === null) return why;
+  return `${why} Dark ${streak} hour${streak === 1 ? '' : 's'} in a row so far (limit ${model.maxDark}).`;
+}
+
+function baseReason(model, shop, slot, hourLoad, totalCents, optimal, bestEffort) {
   const t = slotLabel(slot);
   if (shop.kw > model.capacity) {
     return `Too big for the generator: needs ${shop.kw} kW, the generator carries ${model.capacity} kW. It can only run on grid power.`;
@@ -25,8 +33,9 @@ function reasonFor(model, shop, slot, hourLoad, totalCents, optimal, bestEffort 
       + `even this plan needs ${L(totalCents)} L against the ${L(model.budget)} L budget.`;
   }
   if (totalCents + extra > model.budget) {
-    return `Diesel: switching it on lifts ${t} from ${hourLoad} to ${hourLoad + shop.kw} kW (${L(before)} -> ${L(after)} L/h), `
-      + `so the day would need ${L(totalCents + extra)} L of the ${L(model.budget)} L budget; that diesel is used in other hours of the plan.`;
+    return `Diesel: switching it on lifts ${t} from ${hourLoad} to ${hourLoad + shop.kw} kW (${L(before)} -> ${L(after)} L/h, +${L(extra)} L). `
+      + `The plan uses ${L(totalCents)} of the ${L(model.budget)} L budget, leaving ${L(model.budget - totalCents)} L spare, `
+      + `so the day would need ${L(totalCents + extra)} L; that diesel is spent in other hours of the plan.`;
   }
   const value = shop.values[slot];
   if (value === 0) return `No gain: worth 0 at ${t}, so switching it on adds nothing.`;

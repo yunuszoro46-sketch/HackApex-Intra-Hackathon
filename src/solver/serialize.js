@@ -17,18 +17,25 @@ function rosterBody(model, powered, optimal, bestEffort = false) {
     valueTotal += on.reduce((a, s) => a + s.values[slot], 0);
     return { slot, on, load, fuel, running };
   });
-  const roster = hours.map(({ slot, on, load, fuel, running: run }) => ({
+  const streak = Object.fromEntries(model.shops.map((s) => [s.id, 0]));
+  let prevSlot = null;
+  const roster = hours.map(({ slot, on, load, fuel, running: run }) => {
+    if (prevSlot !== slot - 1) for (const id in streak) streak[id] = 0; // a grid hour in between resets every run
+    prevSlot = slot;
+    for (const s of model.shops) streak[s.id] = on.includes(s) ? 0 : streak[s.id] + 1;
+    return {
     slot,
     time: slotLabel(slot),
     powered: on.map((s) => s.id),
     dark: model.shops.filter((s) => !on.includes(s)).map((s) => {
       dark[s.id] += 1;
-      return { id: s.id, reason: reasonFor(model, s, slot, load, running, optimal, bestEffort) };
+      return { id: s.id, reason: reasonFor(model, s, slot, load, running, optimal, bestEffort, streak[s.id]) };
     }),
     load_kw: load,
     fuel_litres: litres(fuel),
     fuel_running_litres: litres(run),
-  }));
+    };
+  });
   return {
     roster,
     value_total: valueTotal,

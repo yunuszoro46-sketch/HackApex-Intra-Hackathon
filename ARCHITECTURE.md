@@ -67,7 +67,7 @@ For each dark shop, switch on only that shop and report what breaks, with the nu
 4. **Diesel:** the hour would move to a dearer level, and the day would exceed the budget.
 5. **No gain:** the shop is worth 0 that hour.
 
-In an optimal roster one of these always applies.
+In an optimal roster one of these always applies. Every reason ends with the shop's real dark streak at that hour and the limit ("Dark 2 hours in a row so far (limit 2)."), counted from the final roster with grid hours resetting it. Diesel reasons also state the plan's total and the spare diesel.
 
 - **When `optimal` is false:** the fallback text says so.
 - **For an infeasible day's best-effort roster:** the reasons say "Least-diesel plan …".
