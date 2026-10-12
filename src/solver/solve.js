@@ -170,7 +170,7 @@ function keepBest(layer, width, ubRow, b) {
 //     If it completes, the answer is proven optimal (and "no roster" is proven infeasible).
 //  3. Safety net: if the exact pass would exceed its memory or time allowance, the best roster found so far is
 //     returned with optimal: false, so the server always answers (it never runs out of memory).
-function solveMaxValue(model, { timeLimitMs = 7000, maxLabels = 2500000 } = {}) {
+function solveMaxValue(model, { timeLimitMs = 6000, maxLabels = 2500000 } = {}) {
   const started = Date.now();
   if (obviousInfeasible(model)) return { feasible: false, optimal: true };
   const enc = encoding(model);
@@ -180,17 +180,33 @@ function solveMaxValue(model, { timeLimitMs = 7000, maxLabels = 2500000 } = {}) 
   const ctx = { enc, tables, ub: upperBounds(model, tables, cap), B: model.budget, cap };
   const deadline = started + timeLimitMs;
 
+  // A quick beam pass first: cheap, and on almost every input it finds a valid roster within a fraction of a second.
+  // (Fix for evidence/regression_timeout: before, the least-diesel search ran first, overran its deadline, and the
+  // beam then had no time left, so a feasible day was answered "infeasible, not proven" after 21 s.)
+  const quick = layeredSearch(model, ctx, { beamWidth: 300, deadline });
   // The least-diesel roster that keeps every other rule: if even it is over budget, no roster exists (proven,
   // and its figure explains why). Otherwise it is a valid roster and a first floor for the search.
-  const minFuel = solveMinFuel(model, { deadline: started + timeLimitMs / 2 });
-  if (!minFuel.aborted && (!minFuel.feasible || minFuel.fuelCents > model.budget)) return { feasible: false, optimal: true, minFuel };
-  const quick = layeredSearch(model, ctx, { beamWidth: 300, deadline });
+  // If the beam found nothing, the day may well be infeasible, and the least-diesel search is what proves it, so it
+  // gets the whole allowance; otherwise half, leaving time for the exact pass.
+  // When the beam already found a valid roster the day is feasible and this search is skipped (more time for the
+  // exact pass). Otherwise it runs with the budget as a cut-off: any partial plan that cannot finish within the
+  // budget is dropped, which proves "infeasible" far faster than computing the exact minimum. The exact minimum is
+  // then computed for the explanation only if time allows.
+  let minFuel = { aborted: true, skipped: true };
+  if (!quick.best) {
+    minFuel = solveMinFuel(model, { deadline: started + timeLimitMs, cutoff: model.budget });
+    if (minFuel.overBudget) {
+      const exactMin = solveMinFuel(model, { deadline: Math.min(started + timeLimitMs, Date.now() + 3000) });
+      return { feasible: false, optimal: true, minFuel: exactMin.aborted ? minFuel : exactMin };
+    }
+    if (!minFuel.aborted && !minFuel.feasible) return { feasible: false, optimal: true, minFuel };
+  }
   const floor = Math.max(quick.best ? quick.best.v : -Infinity, minFuel.feasible ? minFuel.value : -Infinity);
   const exact = layeredSearch(model, ctx, { floor, deadline, maxLabels });
   let best, optimal;
   if (!exact.aborted) { best = exact.best; optimal = true; }
   else {
-    const wide = layeredSearch(model, ctx, { beamWidth: 5000, deadline: started + timeLimitMs + 1500 });
+    const wide = layeredSearch(model, ctx, { beamWidth: 5000, deadline: started + timeLimitMs + 700 });
     best = [quick.best, wide.aborted ? null : wide.best].filter(Boolean).sort((a, b) => b.v - a.v || a.f - b.f)[0] || null;
     optimal = false;
   }
@@ -204,11 +220,18 @@ function solveMaxValue(model, { timeLimitMs = 7000, maxLabels = 2500000 } = {}) 
 // Least diesel that satisfies capacity + mandatory + dark-run rules, ignoring the budget (used to explain an
 // infeasible day: "the rules need at least X L, the budget is Y L"). Returns emptyAt = first outage slot at which
 // no assignment fits at all (capacity and dark-run rule clash), if that happens.
-function solveMinFuel(model, { deadline = Infinity } = {}) {
+// cutoff (optional, in hundredths): drop partial plans whose diesel plus the least possible diesel of the remaining
+// hours exceeds it. If that empties a layer, the answer is { feasible: false, overBudget: true } = no plan within it.
+function solveMinFuel(model, { deadline = Infinity, cutoff = Infinity } = {}) {
   if (model.mandatoryKw > model.capacity) return { feasible: false, emptyAt: model.outageSlots[0] };
   if (obviousInfeasible(model)) return { feasible: false, emptyAt: null };
   const enc = encoding(model);
-  let layer = new Map([[0, { f: 0, v: 0, prev: null, mask: 0 }]]);
+  let layer = new Map([[0, { f: 0, v: 0, prev: null, mask: 0 }]]), count = 0;
+  // lbRest[i] = least diesel hours i.. can possibly burn (cheapest allowed set each hour, ignoring the dark-run rule).
+  const hourMin = model.outageSlots.map((slot) => { const t = hourTable(model, slot); let m = Infinity; for (let k = 0; k < t.valid.length; k++) if (t.valid[k] && t.fuel[k] < m) m = t.fuel[k]; return m; });
+  const lbRest = Array(hourMin.length + 1).fill(0);
+  for (let i = hourMin.length - 1; i >= 0; i--) lbRest[i] = lbRest[i + 1] + hourMin[i];
+  let cutHit = false;
   for (let i = 0; i < model.outageSlots.length; i++) {
     const slot = model.outageSlots[i];
     if (i > 0 && slot !== model.outageSlots[i - 1] + 1) {
@@ -221,7 +244,10 @@ function solveMinFuel(model, { deadline = Infinity } = {}) {
       const runs = enc.decode(key), F = forcedMask(enc, runs), freeBits = enc.full & ~F;
       for (let sub = freeBits; ; sub = (sub - 1) & freeBits) {
         const mask = F | sub;
+        // Deadline checked inside the layer too: one layer alone can be huge (see evidence/regression_timeout).
+        if (++count % 20000 === 0 && Date.now() > deadline) return { feasible: false, aborted: true };
         if (t.valid[mask] && t.maximal[mask]) {
+          if (l.f + t.fuel[mask] + lbRest[i + 1] > cutoff) { cutHit = true; if (sub === 0) break; continue; }
           const nk = nextKey(enc, runs, mask), cand = { f: l.f + t.fuel[mask], v: l.v + t.value[mask], prev: l, mask };
           const cur = next.get(nk);
           if (!cur || cand.f < cur.f || (cand.f === cur.f && cand.v > cur.v)) next.set(nk, cand);
@@ -229,7 +255,7 @@ function solveMinFuel(model, { deadline = Infinity } = {}) {
         if (sub === 0) break;
       }
     }
-    if (next.size === 0) return { feasible: false, emptyAt: slot, lastLayer: layer, enc };
+    if (next.size === 0) return cutHit ? { feasible: false, overBudget: true } : { feasible: false, emptyAt: slot, lastLayer: layer, enc };
     layer = next;
   }
   let best = null; for (const l of layer.values()) if (!best || l.f < best.f || (l.f === best.f && l.v > best.v)) best = l;

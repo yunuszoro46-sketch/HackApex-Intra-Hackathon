@@ -86,6 +86,12 @@ test('regression input (all hours out, 12 small shops) answers optimally instead
   assert.equal(r.body.status, 'ok'); assert.equal(r.body.optimal, true); assert.deepEqual(checkRoster(i, r.body), []);
 });
 
+test('regression (fuzz case 77): a feasible day is answered ok and proven optimal in under 10 s, not "infeasible" after 21 s', async () => {
+  const i = read('evidence/regression_timeout/input_fuzz_case77.json');
+  const r = await post(i);   // post() asserts the 10 s limit
+  assert.equal(r.body.status, 'ok'); assert.equal(r.body.optimal, true); assert.deepEqual(checkRoster(i, r.body), []);
+});
+
 test('adversarial inputs get 400 with the field named', async () => {
   const s = read('inputs/sample_input.json');
   const cases = [

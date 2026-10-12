@@ -8,3 +8,4 @@ post() { curl -s -X POST -H 'content-type: application/json' --data @"$1" "$URL"
 post evidence/regression/input_all_outage_small_shops.json evidence/regression/after_output.json
 post evidence/boundary/input_budget_exact.json evidence/boundary/output_budget_exact.json
 post evidence/boundary/input_budget_one_hundredth_short.json evidence/boundary/output_budget_one_hundredth_short.json
+post evidence/regression_timeout/input_fuzz_case77.json evidence/regression_timeout/after_output.json

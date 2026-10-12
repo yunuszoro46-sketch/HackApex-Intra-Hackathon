@@ -1,0 +1,30 @@
+Commit 9c7adcb, 2026-10-12 11:20 +06, via the API:
+curl -s -X POST --data @evidence/regression_timeout/input_fuzz_case77.json http://localhost:3300/api/roster
+
+{
+  "status": "infeasible",
+  "message": "No roster that keeps every rule was found, but the search hit its time limit before it could prove that none exists, and the minimum diesel could not be computed in time.",
+  "conflicts": [
+    {
+      "rule": "search_limit",
+      "shops": [],
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9
+      ],
+      "detail": "No roster that keeps every rule was found, but the search hit its time limit before it could prove that none exists, and the minimum diesel could not be computed in time."
+    }
+  ],
+  "roster": [],
+  "best_effort": null,
+  "proven": false
+}
+
+HTTP 200, total time 21.160856 s

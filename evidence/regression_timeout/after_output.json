@@ -1,0 +1,405 @@
+{
+  "status": "ok",
+  "roster": [
+    {
+      "slot": 0,
+      "time": "10:00",
+      "powered": [
+        "s1",
+        "s4",
+        "s7",
+        "s9",
+        "s10",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 22 of 25 kW already in use at 10:00; adding 13 kW would make 35 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s2",
+          "reason": "Capacity: 22 of 25 kW already in use at 10:00; adding 7 kW would make 29 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s3",
+          "reason": "Diesel: switching it on lifts 10:00 from 22 to 25 kW (2.17 -> 2.70 L/h, +0.53 L). The plan uses 21.12 of the 21.57 L budget, leaving 0.45 L spare, so the day would need 21.65 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 22 of 25 kW already in use at 10:00; adding 4 kW would make 26 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 22 of 25 kW already in use at 10:00; adding 9 kW would make 31 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 22 of 25 kW already in use at 10:00; adding 10 kW would make 32 kW. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 22,
+      "fuel_litres": 2.17,
+      "fuel_running_litres": 2.17
+    },
+    {
+      "slot": 1,
+      "time": "11:00",
+      "powered": [
+        "s2",
+        "s4",
+        "s5",
+        "s7",
+        "s9"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 23 of 25 kW already in use at 11:00; adding 13 kW would make 36 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s1",
+          "reason": "Diesel: switching it on lifts 11:00 from 23 to 25 kW (2.17 -> 2.70 L/h, +0.53 L). The plan uses 21.12 of the 21.57 L budget, leaving 0.45 L spare, so the day would need 21.65 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s3",
+          "reason": "Capacity: 23 of 25 kW already in use at 11:00; adding 3 kW would make 26 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 23 of 25 kW already in use at 11:00; adding 9 kW would make 32 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 23 of 25 kW already in use at 11:00; adding 10 kW would make 33 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s10",
+          "reason": "Capacity: 23 of 25 kW already in use at 11:00; adding 7 kW would make 30 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s11",
+          "reason": "Diesel: switching it on lifts 11:00 from 23 to 24 kW (2.17 -> 2.70 L/h, +0.53 L). The plan uses 21.12 of the 21.57 L budget, leaving 0.45 L spare, so the day would need 21.65 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 23,
+      "fuel_litres": 2.17,
+      "fuel_running_litres": 4.34
+    },
+    {
+      "slot": 2,
+      "time": "12:00",
+      "powered": [
+        "s1",
+        "s3",
+        "s4",
+        "s6",
+        "s7",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 23 of 25 kW already in use at 12:00; adding 13 kW would make 36 kW. Dark 3 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s2",
+          "reason": "Capacity: 23 of 25 kW already in use at 12:00; adding 7 kW would make 30 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 23 of 25 kW already in use at 12:00; adding 4 kW would make 27 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 23 of 25 kW already in use at 12:00; adding 10 kW would make 33 kW. Dark 3 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s9",
+          "reason": "Capacity: 23 of 25 kW already in use at 12:00; adding 4 kW would make 27 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s10",
+          "reason": "Capacity: 23 of 25 kW already in use at 12:00; adding 7 kW would make 30 kW. Dark 2 hours in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 23,
+      "fuel_litres": 2.17,
+      "fuel_running_litres": 6.51
+    },
+    {
+      "slot": 3,
+      "time": "13:00",
+      "powered": [
+        "s0",
+        "s4",
+        "s8",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s1",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 2 kW would make 27 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s2",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 7 kW would make 32 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s3",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 3 kW would make 28 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 4 kW would make 29 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 9 kW would make 34 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s7",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 7 kW would make 32 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s9",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 4 kW would make 29 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s10",
+          "reason": "Capacity: 25 of 25 kW already in use at 13:00; adding 7 kW would make 32 kW. Dark 3 hours in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 25,
+      "fuel_litres": 2.7,
+      "fuel_running_litres": 9.21
+    },
+    {
+      "slot": 4,
+      "time": "14:00",
+      "powered": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s9",
+        "s10",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 25 of 25 kW already in use at 14:00; adding 13 kW would make 38 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 25 of 25 kW already in use at 14:00; adding 4 kW would make 29 kW. Dark 3 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 25 of 25 kW already in use at 14:00; adding 9 kW would make 34 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s7",
+          "reason": "Capacity: 25 of 25 kW already in use at 14:00; adding 7 kW would make 32 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 25 of 25 kW already in use at 14:00; adding 10 kW would make 35 kW. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 25,
+      "fuel_litres": 2.7,
+      "fuel_running_litres": 11.91
+    },
+    {
+      "slot": 6,
+      "time": "16:00",
+      "powered": [
+        "s1",
+        "s3",
+        "s4",
+        "s5",
+        "s9",
+        "s10",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 22 of 25 kW already in use at 16:00; adding 13 kW would make 35 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s2",
+          "reason": "Capacity: 22 of 25 kW already in use at 16:00; adding 7 kW would make 29 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 22 of 25 kW already in use at 16:00; adding 9 kW would make 31 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s7",
+          "reason": "Capacity: 22 of 25 kW already in use at 16:00; adding 7 kW would make 29 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 22 of 25 kW already in use at 16:00; adding 10 kW would make 32 kW. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 22,
+      "fuel_litres": 2.17,
+      "fuel_running_litres": 14.08
+    },
+    {
+      "slot": 7,
+      "time": "17:00",
+      "powered": [
+        "s1",
+        "s3",
+        "s4",
+        "s6",
+        "s7",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 23 of 25 kW already in use at 17:00; adding 13 kW would make 36 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s2",
+          "reason": "Capacity: 23 of 25 kW already in use at 17:00; adding 7 kW would make 30 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 23 of 25 kW already in use at 17:00; adding 4 kW would make 27 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 23 of 25 kW already in use at 17:00; adding 10 kW would make 33 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s9",
+          "reason": "Capacity: 23 of 25 kW already in use at 17:00; adding 4 kW would make 27 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s10",
+          "reason": "Capacity: 23 of 25 kW already in use at 17:00; adding 7 kW would make 30 kW. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 23,
+      "fuel_litres": 2.17,
+      "fuel_running_litres": 16.25
+    },
+    {
+      "slot": 8,
+      "time": "18:00",
+      "powered": [
+        "s3",
+        "s8",
+        "s9",
+        "s10",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s0",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 13 kW would make 38 kW. Dark 3 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s1",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 2 kW would make 27 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s2",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 7 kW would make 32 kW. Dark 3 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s4",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 1 kW would make 26 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 4 kW would make 29 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 9 kW would make 34 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s7",
+          "reason": "Capacity: 25 of 25 kW already in use at 18:00; adding 7 kW would make 32 kW. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 25,
+      "fuel_litres": 2.7,
+      "fuel_running_litres": 18.95
+    },
+    {
+      "slot": 9,
+      "time": "19:00",
+      "powered": [
+        "s0",
+        "s2",
+        "s4",
+        "s11"
+      ],
+      "dark": [
+        {
+          "id": "s1",
+          "reason": "Diesel: switching it on lifts 19:00 from 22 to 24 kW (2.17 -> 2.70 L/h, +0.53 L). The plan uses 21.12 of the 21.57 L budget, leaving 0.45 L spare, so the day would need 21.65 L; that diesel is spent in other hours of the plan. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s3",
+          "reason": "Diesel: switching it on lifts 19:00 from 22 to 25 kW (2.17 -> 2.70 L/h, +0.53 L). The plan uses 21.12 of the 21.57 L budget, leaving 0.45 L spare, so the day would need 21.65 L; that diesel is spent in other hours of the plan. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s5",
+          "reason": "Capacity: 22 of 25 kW already in use at 19:00; adding 4 kW would make 26 kW. Dark 3 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s6",
+          "reason": "Capacity: 22 of 25 kW already in use at 19:00; adding 9 kW would make 31 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s7",
+          "reason": "Capacity: 22 of 25 kW already in use at 19:00; adding 7 kW would make 29 kW. Dark 2 hours in a row so far (limit 3)."
+        },
+        {
+          "id": "s8",
+          "reason": "Capacity: 22 of 25 kW already in use at 19:00; adding 10 kW would make 32 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s9",
+          "reason": "Capacity: 22 of 25 kW already in use at 19:00; adding 4 kW would make 26 kW. Dark 1 hour in a row so far (limit 3)."
+        },
+        {
+          "id": "s10",
+          "reason": "Capacity: 22 of 25 kW already in use at 19:00; adding 7 kW would make 29 kW. Dark 1 hour in a row so far (limit 3)."
+        }
+      ],
+      "load_kw": 22,
+      "fuel_litres": 2.17,
+      "fuel_running_litres": 21.12
+    }
+  ],
+  "value_total": 304,
+  "fuel_total_litres": 21.12,
+  "dark_hours": {
+    "s0": 7,
+    "s1": 4,
+    "s2": 6,
+    "s3": 4,
+    "s4": 1,
+    "s5": 7,
+    "s6": 7,
+    "s7": 5,
+    "s8": 7,
+    "s9": 4,
+    "s10": 5,
+    "s11": 1
+  },
+  "capacity_kw": 25,
+  "fuel_budget_litres": 21.57,
+  "optimal": true
+}
