@@ -26,8 +26,10 @@ function roster(input, opts = {}) {
     if (violations.length) return { httpStatus: 500, body: { status: 'error', message: 'internal check failed; roster withheld', violations } };
     return { httpStatus: 200, body };
   }
-  const { conflicts, bestEffort } = diagnose(model);
-  return { httpStatus: 200, body: infeasibleBody(model, conflicts, bestEffort) };
+  const { conflicts, bestEffort } = diagnose(model, result.minFuel);
+  const body = infeasibleBody(model, conflicts, bestEffort);
+  body.proven = !result.searchIncomplete;
+  return { httpStatus: 200, body };
 }
 
 // For raw request text: a body that is not JSON at all is also invalid_input.

@@ -7,7 +7,7 @@ const { solveMinFuel } = require('./solve');
 const L = (cents) => (cents / 100).toFixed(2);
 const span = (slots) => (slots.length ? `${slotLabel(slots[0])}-${slotLabel(slots[slots.length - 1] + 1)}` : '');
 
-function diagnose(model) {
+function diagnose(model, known = null) {
   const conflicts = [];
   const mandIds = model.mandatory.map((s) => s.id);
 
@@ -36,7 +36,7 @@ function diagnose(model) {
   }
 
   // 4. Exact minimum diesel needed to respect capacity, mandatory shops and the dark-run rule.
-  const min = solveMinFuel(model);
+  const min = known && !known.aborted ? known : solveMinFuel(model, { deadline: Date.now() + 2500 });
   if (min.feasible && min.fuelCents > model.budget) {
     conflicts.push({ rule: 'fuel', shops: model.eligible.map((s) => s.id), slots: model.outageSlots,
       detail: `No shop may be dark more than ${model.maxDark} hours in a row, and keeping to that needs at least ${L(min.fuelCents)} L of diesel (computed exactly over all ${model.outageSlots.length} outage hours); the budget is ${L(model.budget)} L, ${L(min.fuelCents - model.budget)} L short.` });
@@ -59,6 +59,11 @@ function diagnose(model) {
     return { conflicts, bestEffort: null };
   }
 
+  if (min.aborted) {
+    conflicts.push({ rule: 'search_limit', shops: [], slots: model.outageSlots,
+      detail: 'No roster that keeps every rule was found, but the search hit its time limit before it could prove that none exists, and the minimum diesel could not be computed in time.' });
+    return { conflicts, bestEffort: null };
+  }
   conflicts.push({ rule: 'combined', shops: [], slots: model.outageSlots,
     detail: 'No roster satisfies capacity, the diesel budget, the mandatory shops and the dark-run rule together.' });
   return { conflicts, bestEffort: null };

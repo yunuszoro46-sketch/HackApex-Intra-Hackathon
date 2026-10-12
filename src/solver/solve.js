@@ -20,7 +20,7 @@ const { buildModel } = require('./model');
 // including the mandatory shops). Subsets that overload the generator are marked invalid.
 function hourTable(model, slot) {
   const n = model.eligible.length, N = 1 << n;
-  const load = new Int32Array(N), value = new Float64Array(N), fuel = new Float64Array(N), valid = new Uint8Array(N);
+  const load = new Int32Array(N), value = new Float64Array(N), fuel = new Float64Array(N), valid = new Uint8Array(N), maximal = new Uint8Array(N);
   for (let mask = 1; mask < N; mask++) {
     const k = 31 - Math.clz32(mask & -mask), rest = mask & (mask - 1), shop = model.eligible[k];
     load[mask] = load[rest] + shop.kw;
@@ -33,7 +33,19 @@ function hourTable(model, slot) {
     fuel[mask] = model.fuelFor(model.mandatoryKw + load[mask]);
     if (!Number.isFinite(fuel[mask])) valid[mask] = 0;
   }
-  return { load, value, fuel, valid };
+  // A set of shops is "full for its fuel level" when no other shop could be added without moving the hour to a
+  // dearer fuel level (or over capacity). Adding a shop that fits costs no diesel, never lowers value (values are
+  // >= 0) and resets that shop's dark run, which can only help later hours. So some optimal roster uses only such
+  // full sets, and the search only needs to try those. This is what keeps the search small on big inputs.
+  const levelKw = (kw) => { if (kw <= 0) return 0; for (const lv of model.levels) if (lv.kw >= kw) return lv.kw; return -1; };
+  for (let mask = 0; mask < N; mask++) {
+    if (!valid[mask]) continue;
+    const total = model.mandatoryKw + load[mask], room = Math.min(levelKw(total), model.capacity) - total;
+    let full = 1;
+    for (let k = 0; k < n && full; k++) if (!((mask >> k) & 1) && model.eligible[k].kw <= room) full = 0;
+    maximal[mask] = full;
+  }
+  return { load, value, fuel, valid, maximal };
 }
 
 // Shared set-up: state encoding. If max_consecutive_dark is at least the longest outage block, the dark-run rule
@@ -77,55 +89,122 @@ function pareto(list) {
   return out;
 }
 
-// Maximise value within the diesel budget. Returns the roster or {feasible:false}.
-function solveMaxValue(model, { timeLimitMs = 7000 } = {}) {
-  const started = Date.now();
-  if (obviousInfeasible(model)) return { feasible: false, optimal: true };
-  const enc = encoding(model), B = model.budget;
+// Optimistic bound used to skip hopeless branches. For every remaining outage hour take the best value any allowed
+// set of shops could earn at each fuel cost, IGNORING the dark-run rule, and share the remaining diesel between
+// those hours (a small knapsack over diesel in hundredths). Ignoring a rule can only over-estimate, so the bound
+// never cuts off the true optimum. ub[i][b] = most value hours i..end can still earn with b hundredths of diesel.
+function upperBounds(model, tables, budgetCap) {
+  const T = tables.length, ub = [];
+  ub[T] = new Float64Array(budgetCap + 1);                     // nothing left to earn
+  for (let i = T - 1; i >= 0; i--) {
+    const byFuel = new Map(), t = tables[i];
+    for (let m = 0; m < t.valid.length; m++) if (t.valid[m] && !(byFuel.get(t.fuel[m]) >= t.value[m])) byFuel.set(t.fuel[m], t.value[m]);
+    const row = new Float64Array(budgetCap + 1).fill(-Infinity), nextRow = ub[i + 1];
+    for (let b = 0; b <= budgetCap; b++) {
+      for (const [c, v] of byFuel) if (c <= b && nextRow[b - c] + v > row[b]) row[b] = nextRow[b - c] + v;
+    }
+    ub[i] = row;
+  }
+  return ub;
+}
+
+// One pass of the layered search. beamWidth = 0 means exact (keep every non-dominated label, prune only with the
+// bound against a known feasible value `floor`). beamWidth > 0 keeps only the most promising labels per hour: fast,
+// used to find a good feasible roster first; its result is never called optimal on its own.
+function layeredSearch(model, ctx, { beamWidth = 0, floor = -Infinity, deadline = Infinity, maxLabels = Infinity } = {}) {
+  const { enc, tables, ub, B, cap } = ctx;
   let layer = new Map([[0, [{ f: 0, v: 0, prev: null, mask: 0 }]]]);
-  let optimal = true;
-  model.outageSlots.forEach((slot, i) => {
-    if (i > 0 && slot !== model.outageSlots[i - 1] + 1) {            // grid hour in between: all runs reset
+  for (let i = 0; i < model.outageSlots.length; i++) {
+    const slot = model.outageSlots[i];
+    if (i > 0 && slot !== model.outageSlots[i - 1] + 1) {          // grid hour in between: all runs reset
       const all = []; for (const ls of layer.values()) all.push(...ls);
       layer = new Map([[0, pareto(all)]]);
     }
-    const t = hourTable(model, slot), next = new Map();
+    const t = tables[i], nextUb = ub[i + 1], next = new Map();
+    let count = 0;
     for (const [key, labels] of layer) {
       const runs = enc.decode(key), F = forcedMask(enc, runs), freeBits = enc.full & ~F;
-      // every subset of the not-forced shops, joined with the forced ones (largest first: deterministic order)
       for (let sub = freeBits; ; sub = (sub - 1) & freeBits) {
         const mask = F | sub;
-        if (t.valid[mask]) {
-          const fu = t.fuel[mask], val = t.value[mask], nk = nextKey(enc, runs, mask);
-          let bucket = next.get(nk);
+        if (t.valid[mask] && t.maximal[mask]) {
+          const fu = t.fuel[mask], val = t.value[mask];
+          let nk = -1, bucket = null;
           for (const l of labels) {
-            if (l.f + fu > B) break;                                   // labels are sorted by fuel
-            if (!bucket) { bucket = []; next.set(nk, bucket); }
-            bucket.push({ f: l.f + fu, v: l.v + val, prev: l, mask });
+            const nf = l.f + fu;
+            if (nf > B) break;                                        // labels are sorted by fuel
+            const nv = l.v + val;
+            if (nv + nextUb[Math.min(cap, B) - nf] < floor) continue;  // cannot beat a roster we already have
+            if (nk < 0) { nk = nextKey(enc, runs, mask); bucket = next.get(nk); if (!bucket) { bucket = []; next.set(nk, bucket); } }
+            bucket.push({ f: nf, v: nv, prev: l, mask });
+            if (++count > maxLabels || (count % 50000 === 0 && Date.now() > deadline)) return { aborted: true };
           }
         }
         if (sub === 0) break;
       }
     }
     for (const [k, ls] of next) next.set(k, pareto(ls));
-    // Time guard: if the exact search runs long, keep only the best-valued label per state from here on.
-    // The answer is then still a valid roster, but it is labelled "optimality not proven".
-    if (Date.now() - started > timeLimitMs) {
-      optimal = false;
-      for (const [k, ls] of next) next.set(k, [ls.reduce((a, b) => (b.v > a.v || (b.v === a.v && b.f < a.f) ? b : a))]);
-    }
-    layer = next;
-  });
+    if (beamWidth > 0) layer = keepBest(next, beamWidth, nextUb, Math.min(cap, B));
+    else layer = next;
+    if (Date.now() > deadline) return { aborted: true };
+  }
   let best = null;
   for (const ls of layer.values()) for (const l of ls) if (!best || l.v > best.v || (l.v === best.v && l.f < best.f)) best = l;
-  if (!best) return { feasible: false, optimal };
+  return { aborted: false, best };
+}
+
+// Beam: keep the `width` labels with the highest value + optimistic remaining value (deterministic tie order).
+function keepBest(layer, width, ubRow, b) {
+  const all = [];
+  for (const [k, ls] of layer) for (const l of ls) all.push([k, l, l.v + ubRow[b - l.f]]);
+  if (all.length <= width) return layer;
+  all.sort((x, y) => y[2] - x[2] || y[1].v - x[1].v || x[1].f - y[1].f || x[0] - y[0]);
+  const out = new Map();
+  for (const [k, l] of all.slice(0, width)) { if (!out.has(k)) out.set(k, []); out.get(k).push(l); }
+  for (const [k, ls] of out) out.set(k, pareto(ls));
+  return out;
+}
+
+// Maximise value within the diesel budget.
+//  1. A quick beam pass finds a good feasible roster (a floor).
+//  2. The exact pass keeps every non-dominated label but skips any whose value + optimistic bound is below the floor.
+//     If it completes, the answer is proven optimal (and "no roster" is proven infeasible).
+//  3. Safety net: if the exact pass would exceed its memory or time allowance, the best roster found so far is
+//     returned with optimal: false, so the server always answers (it never runs out of memory).
+function solveMaxValue(model, { timeLimitMs = 7000, maxLabels = 2500000 } = {}) {
+  const started = Date.now();
+  if (obviousInfeasible(model)) return { feasible: false, optimal: true };
+  const enc = encoding(model);
+  const tables = model.outageSlots.map((slot) => hourTable(model, slot));
+  const maxHour = tables.reduce((a, t) => { let m = 0; for (let k = 0; k < t.valid.length; k++) if (t.valid[k] && t.fuel[k] > m) m = t.fuel[k]; return a + m; }, 0);
+  const cap = Math.min(model.budget, maxHour);                    // diesel beyond this can never be spent
+  const ctx = { enc, tables, ub: upperBounds(model, tables, cap), B: model.budget, cap };
+  const deadline = started + timeLimitMs;
+
+  // The least-diesel roster that keeps every other rule: if even it is over budget, no roster exists (proven,
+  // and its figure explains why). Otherwise it is a valid roster and a first floor for the search.
+  const minFuel = solveMinFuel(model, { deadline: started + timeLimitMs / 2 });
+  if (!minFuel.aborted && (!minFuel.feasible || minFuel.fuelCents > model.budget)) return { feasible: false, optimal: true, minFuel };
+  const quick = layeredSearch(model, ctx, { beamWidth: 300, deadline });
+  const floor = Math.max(quick.best ? quick.best.v : -Infinity, minFuel.feasible ? minFuel.value : -Infinity);
+  const exact = layeredSearch(model, ctx, { floor, deadline, maxLabels });
+  let best, optimal;
+  if (!exact.aborted) { best = exact.best; optimal = true; }
+  else {
+    const wide = layeredSearch(model, ctx, { beamWidth: 5000, deadline: started + timeLimitMs + 1500 });
+    best = [quick.best, wide.aborted ? null : wide.best].filter(Boolean).sort((a, b) => b.v - a.v || a.f - b.f)[0] || null;
+    optimal = false;
+  }
+  if (!best && minFuel.feasible && minFuel.fuelCents <= model.budget) {
+    return { feasible: true, optimal: false, value: minFuel.value, fuelCents: minFuel.fuelCents, powered: minFuel.powered, ms: Date.now() - started };
+  }
+  if (!best) return { feasible: false, optimal, searchIncomplete: !optimal, minFuel };
   return { feasible: true, optimal, value: best.v, fuelCents: best.f, powered: rebuild(model, best), ms: Date.now() - started };
 }
 
 // Least diesel that satisfies capacity + mandatory + dark-run rules, ignoring the budget (used to explain an
 // infeasible day: "the rules need at least X L, the budget is Y L"). Returns emptyAt = first outage slot at which
 // no assignment fits at all (capacity and dark-run rule clash), if that happens.
-function solveMinFuel(model) {
+function solveMinFuel(model, { deadline = Infinity } = {}) {
   if (model.mandatoryKw > model.capacity) return { feasible: false, emptyAt: model.outageSlots[0] };
   if (obviousInfeasible(model)) return { feasible: false, emptyAt: null };
   const enc = encoding(model);
@@ -137,11 +216,12 @@ function solveMinFuel(model) {
       layer = new Map([[0, best]]);
     }
     const t = hourTable(model, slot), next = new Map();
+    if (Date.now() > deadline) return { feasible: false, aborted: true };
     for (const [key, l] of layer) {
       const runs = enc.decode(key), F = forcedMask(enc, runs), freeBits = enc.full & ~F;
       for (let sub = freeBits; ; sub = (sub - 1) & freeBits) {
         const mask = F | sub;
-        if (t.valid[mask]) {
+        if (t.valid[mask] && t.maximal[mask]) {
           const nk = nextKey(enc, runs, mask), cand = { f: l.f + t.fuel[mask], v: l.v + t.value[mask], prev: l, mask };
           const cur = next.get(nk);
           if (!cur || cand.f < cur.f || (cand.f === cur.f && cand.v > cur.v)) next.set(nk, cand);
