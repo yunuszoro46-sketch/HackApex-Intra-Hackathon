@@ -1,36 +1,12 @@
 # Known issues and open questions
 
-## Missing official materials
-
-The brief says the pack contains `schema.md`, `example_output.json` (the worked example's correct output) and a validator. **None of the three was supplied** for Phase 1; only the brief PDF, the judging PDF and `sample_input.json` were.
-
-Nothing in this repository replaces them. Until they arrive, the following are **provisional and must be checked against `schema.md`:**
-
-1. **Output field names and shapes.** The brief names `status`, `roster` (per outage hour: `powered`, `dark` ids, each dark entry with a one-line `reason`), `value_total`, `fuel_total_litres` and per-shop `dark_hours`. Still unknown:
-   - how an hour is identified (slot index, a "12:00" label, or both);
-   - whether a dark entry is `{id, reason}` or something else;
-   - whether `dark_hours` is an object or a list;
-   - where infeasible details and the error message go;
-   - whether litres are numbers or strings.
-2. **Exact `invalid_input` rules.** Still unknown:
-   - whether extra fields are allowed (the sample has `_story`, so at least that one must be accepted);
-   - whether capacity must be a whole number;
-   - whether `litres_per_hour` must be non-decreasing, or may be 0;
-   - whether `max_consecutive_dark` may be 0;
-   - whether the budget may be 0;
-   - whether `value_per_slot` entries must be integers (rule 2 says "whole-number values ≥ 0", so yes).
-3. **Validator behaviour:** how it is run (CLI or library) and its exact checks on reasons.
-
-**Action:** ask for the full pack (`schema.md`, `example_output.json`, the validator) before Phase 5 (API output format). Phases 2-4 do not depend on the exact output shape.
-
-## Ambiguities in the brief
-
-- **Time budget:** the brief says "You have 3.5 hours" with an update at minute 150. The task prompt says a 5-hour hackathon. The checklist in `PHASE_STATUS.md` is sized to finish the core within 3.5 h, keeping the minute-150 rerun on schedule.
-- **Minute-150 update:** "one grid-on hour becomes an outage … DESCO extended the afternoon block". In the sample, hour 6 (16:00) is the grid hour between the two afternoon blocks, so the two blocks would probably merge into one 8-hour block. This is not confirmed; the solver must not assume it.
-- **"Explain every dark hour with the real rule or trade-off":** a reason that names a competing shop ("dark so that X stays on") needs a swap check; the plan computes it rather than writing generic text.
-
-## Technical risks
-
-- **Search time on hard hidden inputs:** 12 normal shops × 10 outage hours, with small kW and a tight budget, is the worst case for branch and bound. A performance test with a synthetic worst case is the first task of Phase 3. If needed, use the block DP fallback described in `ARCHITECTURE.md`, and keep the time guard so a response always arrives inside 10 s, labelled when optimality is not proven.
-- **Floating-point litres:** must be converted to integer hundredths exactly once, at validation. A float sum compared with the budget could wrongly accept or reject a roster at exactly the budget.
-- **Ties:** equal-value rosters are equally good, but the output should be deterministic. Break ties by lower fuel first, then a fixed shop and hour order, so reruns give the same roster.
+| # | Severity | Issue | Impact | Status |
+|---|---|---|---|---|
+| 1 | High | `schema.md`, `example_output.json` and the official validator were **not supplied** | Output field names follow the brief's wording (`status`, `roster`, `powered`, `dark` with `reason`, `value_total`, `fuel_total_litres`, `dark_hours`). They may differ from the official schema, and the official validator has not been run | Open. Only `src/solver/serialize.js` needs to change. Extra fields (`slot`/`time`, `load_kw`, `fuel_litres`, `fuel_running_litres`, `capacity_kw`, `fuel_budget_litres`, `optimal`, `proven`, `best_effort`) can be removed there if the validator rejects unknown fields |
+| 2 | Medium | Minute-150 input not received yet | `outputs/minute150_output.json` does not exist yet | To do when it arrives: save it as `inputs/minute150_input.json`, run `sh outputs/make.sh`, commit. Both plausible changes (16:00 or 11:00 becoming an outage) are **infeasible**: at least 17.60 L is needed against 17.00 L |
+| 3 | Medium | Validation choices not settled by the brief | **Accepted:** unknown fields; an empty shop list; no outages; `max_consecutive_dark` = 0; a budget of 0; `litres_per_hour` that does not increase with load. **Rejected:** capacity ≤ 0; fuel levels ≤ 0 or not strictly increasing; last level ≠ capacity | Open until the schema arrives. Each choice is one line in `src/solver/validate.js` |
+| 4 | Low | Runtime on the hardest inputs | Measured up to about 5.3 s here (12 tiny shops, all 10 hours out, budget exactly at the minimum). Typical inputs take under 1 s. A slower judging machine could approach the 10 s limit | Guard: after 7 s of search the best roster found is returned with `"optimal": false`, so there is always an answer. Never seen on the sample, the evidence inputs or the tests |
+| 5 | Low | Only one optimal roster is shown when several tie | Equal-value rosters are equally good (brief rule 7). Ties are broken deterministically (less diesel first, then search order), so reruns give identical output | By design |
+| 6 | Low | Reasons describe a single-shop switch-on | A "diesel" reason is true, but does not name which other shop would have to go dark instead | Possible improvement: a swap-based explanation naming the competing shop |
+| 7 | Low | Screen tested in headless Chromium only | Firefox, Safari and real phones not checked (mobile layout is not required) | Open |
+| 8 | Info | Engine field says Node ≥ 20 | Developed and tested only on Node 22.22 | Open |

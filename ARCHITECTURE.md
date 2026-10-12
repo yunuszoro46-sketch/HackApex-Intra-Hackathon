@@ -1,149 +1,84 @@
-# Architecture
+# Architecture (as built)
 
-## Requirements, as stated in the official brief
+## Requirements source
 
-Sources: `Who_Stays_On_Problem_Statement.pdf` (the brief), `Juding_Criteria.pdf`, `inputs/sample_input.json`. Nothing below goes beyond them; open points are in `KNOWN_ISSUES.md`.
+The brief (`Who_Stays_On_Problem_Statement.pdf`), the judging criteria, and `inputs/sample_input.json`. The official `schema.md`, `example_output.json` and validator were not supplied (see `KNOWN_ISSUES.md`). The full requirement list is in `IMPLEMENTATION_PLAN.md` and `IDEA_TO_ACTION.md`.
 
-**Hours.** Slots 0-9 are 10:00-19:00 (each one hour, ending 20:00). Grid-on hour: everyone powered, no fuel, no roster entry, no value counted. A day with no outage is valid: empty roster, zero totals.
-
-**Input fields.** `grid_available` (10 booleans), `generator_capacity_kw`, `fuel_budget_litres`, `fuel_table` (`load_kw`, `litres_per_hour`), `max_consecutive_dark`, `shops[]` (`id`, `kw`, `type` mandatory/normal, `value_per_slot` 10 numbers). The sample also carries a `_story` field.
-
-**Rules.**
-
-1. **Capacity:** powered kW in each outage hour ≤ capacity. A shop bigger than the generator can never be on in an outage.
-2. **Fuel:** levels are whole kW, increasing, and the last level equals capacity. Charge the first level ≥ the hour's combined powered kW, once per hour, never per shop. Zero load costs zero fuel. The day's total must be ≤ budget, computed in whole hundredths of a litre with no tolerance.
-3. **Mandatory:** every mandatory shop is on in every outage hour.
-4. **Dark runs:** walk the ten hours for each normal shop. A dark outage hour adds one to the run; an on hour or a grid hour resets it. The run must never exceed `max_consecutive_dark`. `dark_hours` counts all dark outage hours; mandatory shops have 0.
-5. **Objective:** value is the sum over outage hours of `value_per_slot[hour]` for every powered shop, mandatory shops included. Maximize it. Ties are equally good.
-
-**Statuses.**
-
-- `ok`: every outage hour appears exactly once; powered ∪ dark = all ids with no overlap; every dark entry has a reason with numbers; totals are recomputed from the roster.
-- `infeasible`: HTTP 200. Say which rule and which shops/hours conflict; a labelled best-effort roster may be attached.
-- `invalid_input`: HTTP 400. The message names the field. Covers a missing or mistyped field, wrong list length, duplicate ids, a bad fuel table, negative numbers, or more than two decimals in litres.
-
-**Limits.** At most 12 shops. Each input must be answered in under 10 s. No internet. The screen must use the same `POST /api/roster` endpoint.
-
-**Screen.**
-
-- Roster board: one row per shop, columns 10:00-19:00, ✓/✗ in outage cells, "grid" in grid hours, mandatory shops marked.
-- Per hour: load vs capacity, fuel that hour, running total vs budget.
-- A reason for every ✗.
-- Status, total value, total fuel, each shop's dark hours.
-- Upload or paste input JSON; download output JSON.
-- Print view on one A4 page.
-
-**Deliverables.**
-
-- One start command, with the port stated in the README.
-- README naming where the solver lives.
-- `evidence/`: one breaking input with the old and fixed output, and one boundary input with its output, run against the API.
-- Our outputs on the sample and the minute-150 input.
-
-## Stack
-
-**Node.js 22 with zero dependencies.**
-
-- Built-in `http` serves the API and the static screen.
-- Vanilla HTML, CSS and JS for the screen, including print CSS.
-- `node --test` for tests.
-
-Why this stack:
-
-- `npm start` works on a judge's machine with no install step and no internet, which is a hard rule.
-- One language runs the solver, the server and the screen.
-- The team has just shipped a Node project with the same zero-dependency pattern.
-
-Rejected:
-
-- **Python with SciPy's MILP or OR-Tools.** Either gives a proven optimum with little code, but needs `pip install` on the judge's machine. Missing packages offline would mean a dead demo.
-- **React or Vite.** A build step and dependencies for a single board screen; the brief says decoration is not required.
-
-## Components (each testable on its own)
+## Components
 
 ```
-public/index.html, app.js, styles.css
-      │ fetch POST /api/roster (same endpoint as external callers)
-src/server.js ───────────── static files, JSON body limit, 400/200 mapping
-      │
-src/solver/index.js  roster(input) → { httpStatus, body }
-      ├─ validate.js  raw JSON → normalized model, or {field, message}   (no solving)
-      ├─ solve.js     model → best roster (exact search)                 (no I/O, no text)
-      ├─ explain.js   model + roster → one reason per dark (shop, hour)  (counterfactual checks)
-      ├─ diagnose.js  model → named conflict when no roster exists
-      └─ check.js     model + output → list of rule violations           (our own checker)
+public/index.html, app.js, styles.css      screen; fetch POST /api/roster (same endpoint as any caller)
+src/server.js                              node:http; static files; 1 MB body limit; 200 / 400 / 405 / 404 / 500
+src/cli.js                                 same pipeline from the command line (exit 0 ok/infeasible, 1 invalid)
+src/solver/index.js   roster(input) = validate -> model -> solveMaxValue -> [diagnose] -> serialize -> checkRoster
+  validate.js    brief rules 2, 4, 9 -> {field, message}; accepts unknown fields (the sample has "_story")
+  model.js       litres -> integer hundredths; outage slots and blocks; fuelFor(kw); eligible vs never-fitting shops
+  solve.js       exact search (below); solveMinFuel (least diesel keeping the other rules)
+  diagnose.js    ordered infeasibility checks with numbers; labelled best-effort roster
+  explain.js     reason for each dark (shop, hour)
+  serialize.js   output JSON; the only file that knows field names
+  check.js       independent re-check of every rule and total (imports nothing from the solver)
 ```
 
-- **Pure functions throughout:** everything under `src/solver/` is plain data in and data out, so tests never need the server.
-- **`check.js` runs on every answer before it is sent.** If it ever finds a violation, the API returns an error instead of a wrong roster. It is our implementation of the rules, **not** the official validator, which was not supplied.
-- **Money-style arithmetic:** litres are converted to integer hundredths at validation (`round(x*100)`, rejecting non-integers). All fuel maths is integer, and litres are formatted only on output.
+There are no dependencies and no database. Every request is computed from scratch.
 
-## Scheduling algorithm
+## Solver (`src/solver/solve.js`)
 
-### Why hour-by-hour greedy fails
+### State and transitions
 
-The brief warns about this directly:
+- **State:** the dark-run counter of every eligible normal shop (0…K), packed into a number. If K is at least the longest outage block, the rule cannot bind, and a single state is used.
+- **Labels per state:** a Pareto list of (diesel in hundredths, value), with a parent pointer and the chosen set of shops.
+- **Transition per outage hour:** a set of shops that:
+  - contains every shop whose run already equals K;
+  - fits within `capacity − mandatory kW`;
+  - is **full for its fuel level**: no other eligible shop could be added without a dearer fuel level or going over capacity.
 
-- It spends diesel at noon and leaves the evening dark.
-- It starves the same low-value shop until the three-hour rule breaks.
+  Restricting to full sets loses no optimum. An added shop costs no diesel, adds value ≥ 0, and lowers its run, which only widens future choices.
+- **Fuel:** charged once per hour from the fuel table on the combined load (mandatory plus chosen). A grid hour merges all states into the all-zero state.
 
-The plan treats the day as one problem.
+### Order of work for one request
 
-### Pre-processing and immediate infeasibility checks (`diagnose.js`)
+1. **Obvious impossibilities:** mandatory kW > capacity, or a never-fitting shop inside an outage block longer than K.
+2. **`solveMinFuel`:** the least diesel that keeps capacity, mandatory and dark-run rules. If none exists, or it is over budget, the answer is **infeasible (proven)**. Otherwise its roster is a valid first floor.
+3. **Quick pass:** a beam of 300 labels per hour finds a good roster quickly.
+4. **Exact pass:** every non-dominated label is kept. A label is skipped only if its value plus an optimistic bound cannot reach the floor.
+   - The bound is the best value per remaining hour at each fuel cost, ignoring the dark-run rule, combined over the remaining diesel by a knapsack in hundredths.
+   - Ignoring a rule can only over-estimate, so nothing optimal is cut.
+   - Completing this pass proves optimality: `"optimal": true`.
+5. **Guard:** if the exact pass would exceed 2.5 million labels in an hour or the 7 s time allowance, the best roster from the quick passes is returned with `"optimal": false`. It is never called optimal.
 
-1. `M` is the combined kW of the mandatory shops. If `M > capacity`, the input is **infeasible: capacity**, naming the mandatory shops and every outage hour.
-2. Fuel for mandatory shops only, summed over the outage hours, must be ≤ budget. Otherwise it is **infeasible: fuel**, naming the minimum diesel needed against the budget.
-3. A normal shop with `kw > capacity − M` can never be on while the mandatory shops are on. If any contiguous outage block is longer than `max_consecutive_dark`, it is **infeasible: dark-run rule**, naming the shop and block. Otherwise the shop is simply dark in every outage hour, with that reason.
-4. Grid hours split the day into **outage blocks**. Runs reset at every grid hour, so blocks interact only through the shared diesel budget.
+### Measured on this machine (Node 22, CLI wall time including Node start-up, 12 Oct 2026)
 
-### Exact search: depth-first branch and bound over outage hours (`solve.js`)
+| Input | Result | Time |
+|---|---|---|
+| Worked example | 84, 8.00 L | < 0.1 s |
+| Sample | 186, 16.40 L | ~0.6 s |
+| Sample + 16:00 outage | infeasible, needs 17.60 L | ~0.1-0.5 s |
+| Evidence input (10 outage hours, 12 small shops, 22 L) | 403 | ~2-3 s |
+| Harder synthetic variants (K = 3, or budget exactly at the minimum) | — | up to ~5.3 s |
 
-- **State:** the hour index, each normal shop's current dark run, fuel used so far (integer hundredths) and value so far.
-- **Choices at an hour:** every subset of eligible normal shops that:
-  - contains every shop whose run is already `max_consecutive_dark`, since it must be on now;
-  - fits within `capacity − M`.
+## Reasons (`src/solver/explain.js`)
 
-  There are at most 2^12 = 4096 subsets, precomputed once per hour with load, fuel level and value. They are tried in descending value order.
-- **Optimistic bound:** for each hour and fuel level, the best value that hour could reach ignoring the dark-run rule. A suffix knapsack over the remaining hours, indexed by remaining diesel in hundredths, gives the most value still reachable. Any branch whose value plus this bound cannot beat the best roster found is cut.
-- **Memo:** a visited table keyed by (hour, run vector) keeps the best (value, fuel) pairs seen. A new state reached with no more value and no less fuel is dropped.
-- **Starting incumbent:** a quick feasible roster (mandatory shops plus whatever the forced shops need, then filled greedily within the budget). It also proves feasibility early.
-- **Result:** when the search finishes, the roster is **optimal for the rules as written**, with the proof given by exhaustion under a valid bound.
-  - A time guard (target ≤ 8 s, under the brief's 10 s) stops the search if it ever runs long.
-  - The best roster found is then returned with an explicit "optimality not proven within time" note. We never claim optimality we did not prove.
+For each dark shop, switch on only that shop and report what breaks, with the numbers. The checks run in this order:
 
-This is not proven fast on every possible input. Phase 3 opens with a performance test on a deliberately hard synthetic input: 12 normal shops, 10 outage hours, small kW and a tight budget.
+1. **Too big:** larger than the generator.
+2. **Never fits:** cannot fit beside the mandatory shops.
+3. **Capacity:** the hour would go over capacity.
+4. **Diesel:** the hour would move to a dearer level, and the day would exceed the budget.
+5. **No gain:** the shop is worth 0 that hour.
 
-### Fallback if the search is too slow on the hard case
+In an optimal roster one of these always applies.
 
-Use an exact block-by-block dynamic programme. Run states only matter within a block, so each block yields a (fuel → best value) frontier, and the blocks are combined with a knapsack over diesel. If that is also too slow, keep the time-guarded search and state it.
+- **When `optimal` is false:** the fallback text says so.
+- **For an infeasible day's best-effort roster:** the reasons say "Least-diesel plan …".
 
-### Reasons (`explain.js`), true by construction
+## Infeasibility (`src/solver/diagnose.js`)
 
-For every dark (shop, hour) in the final roster, test switching that one shop on with everything else unchanged:
+The checks run in order, and the first that applies is reported with its numbers:
 
-- **Capacity:** "would need 4 kW; 18 of 20 kW already in use."
-- **Fuel:** "would lift the load 14→17 kW, from 2.00 to 2.80 L that hour; that leaves too little diesel for the hours where it earns more" (with the numbers).
-- **Fixed by the rules:** "kW larger than capacity minus mandatory load."
-- **No gain:** the hour's value is 0.
-
-In an optimal roster, any single switch-on that stayed within the rules would add value, so every dark entry falls into one of these cases. The check is computed, not guessed.
-
-For a trade-off between shops (shop A is dark so that shop B can be on), the reason names the competing shop and the value difference, worked out by swapping them.
-
-### Infeasible answers (`diagnose.js`)
-
-- Report the first failing check from the pre-processing steps with its numbers.
-- If the pre-checks pass but the search finds no roster, which can happen through capacity and dark-run interactions inside a block, run the same search with "minimize fuel" as the objective. Report either "the dark-run rule needs at least X L but the budget is Y L", or the earliest hour where the forced shops alone exceed capacity, naming those shops.
-- Optionally attach the minimum-violation best-effort roster, clearly labelled.
-
-### Verification
-
-- **Brute-force oracle** (`tools/brute.mjs`) for tiny inputs. Planning reproduced the brief's 84 / 8.00 L in about 12 s by exhaustive enumeration.
-- **Randomized tests:** compare the solver's value with the oracle on many small random inputs. Every output also passes `check.js`.
-- **Boundary inputs:**
-  - no outages; all outages; empty shop list;
-  - `max_consecutive_dark` of 0;
-  - a shop bigger than the generator;
-  - mandatory load equal to or above capacity;
-  - budget exactly equal to the need;
-  - litres with three decimals; duplicate ids; a fuel table whose last level is not capacity.
+1. **capacity:** mandatory kW > capacity.
+2. **max_consecutive_dark:** a never-fitting shop in a block longer than K. The shop, the block and its kW are named.
+3. **fuel:** mandatory-only diesel > budget.
+4. **fuel:** the least diesel keeping every other rule > budget. The best-effort least-diesel roster is attached, labelled "NOT a valid roster".
+5. **max_consecutive_dark:** at some hour the forced shops cannot fit together. That hour and those shops are named.
+6. **search_limit:** used only if the time guard stopped the search before it could prove anything. This is not claimed as proven (`"proven": false`).
