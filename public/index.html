@@ -8,43 +8,75 @@
 </head>
 <body>
   <header class="top">
-    <div>
+    <div class="brand">
       <h1>Who Stays On?</h1>
-      <p class="sub">Generator roster for load-shedding hours: which shops stay powered, how much diesel, and why each shop is dark.</p>
+      <p class="sub">Generator roster for load-shedding hours: which shops stay powered, how much diesel it takes, and why each shop is dark.</p>
     </div>
-    <div class="actions no-print">
-      <button type="button" id="btn-print" disabled>Print roster</button>
-      <button type="button" id="btn-download" disabled>Download output JSON</button>
+    <div class="top-right">
+      <div id="status" class="status" role="status" aria-live="polite"><span class="chip idle">No roster yet</span></div>
+      <div class="actions no-print">
+        <button type="button" id="btn-print" disabled>Print roster</button>
+        <button type="button" id="btn-download" disabled>Download output JSON</button>
+      </div>
     </div>
   </header>
 
   <section class="panel no-print" aria-labelledby="input-h">
-    <h2 id="input-h">1. Today's situation (input JSON)</h2>
-    <div class="row">
-      <label class="file">Upload file <input type="file" id="file" accept=".json,application/json"></label>
-      <button type="button" id="btn-sample">Use the sample (Shapla, Thursday)</button>
-      <button type="button" id="btn-compute" class="primary">Compute roster</button>
-      <span id="busy" class="muted" hidden>Computing…</span>
+    <div class="panel-head">
+      <h2 id="input-h">Today's situation <span class="muted">(input JSON)</span></h2>
+      <div class="row">
+        <input type="file" id="file" class="visually-hidden" accept=".json,application/json">
+        <label class="btn file" for="file">Upload file</label>
+        <button type="button" id="btn-sample">Load the sample (Shapla, Thursday)</button>
+        <button type="button" id="btn-compute" class="primary">Compute roster</button>
+      </div>
     </div>
-    <label for="input" class="muted">…or paste the JSON here:</label>
+    <label for="input" class="muted small">Paste the JSON here, or upload a file. The server checks it and names any field that is wrong.</label>
     <textarea id="input" spellcheck="false" placeholder='{ "grid_available": [...], "generator_capacity_kw": 20, ... }'></textarea>
   </section>
 
-  <section id="result" hidden>
-    <div id="summary" class="summary"></div>
+  <div id="stale" class="stale-note no-print" role="status" hidden>The input has changed since this result was computed. The result below belongs to the previous input. Press <b>Compute roster</b> to recalculate.</div>
+
+  <section id="result" hidden aria-labelledby="board-title">
+    <div id="metrics" class="metrics"></div>
     <div id="problem"></div>
-    <div id="board-wrap">
-      <h2 id="board-title">2. Roster</h2>
-      <p class="legend"><span class="c on">✓</span> powered <span class="c off">✗</span> dark (hover or click for the reason) <span class="c grid">grid</span> mains power, nothing to decide <span class="star">★</span> mandatory</p>
-      <div class="scroll"><table id="board"></table></div>
+
+    <div id="charts" class="charts">
+      <figure class="card chart">
+        <figcaption>Generator load per hour <span class="muted">(kW, capacity dashed)</span></figcaption>
+        <div id="chart-load"></div>
+      </figure>
+      <figure class="card chart">
+        <figcaption>Diesel used so far <span class="muted">(litres, budget dashed)</span></figcaption>
+        <div id="chart-fuel"></div>
+      </figure>
     </div>
-    <div id="reasons-wrap" class="no-print">
-      <h2>3. Why each shop is dark</h2>
+
+    <div id="board-wrap" class="card">
+      <div class="board-head">
+        <h2 id="board-title">Roster</h2>
+        <p class="legend">
+          <span class="c on">✓</span> powered
+          <span class="c off">✗</span> dark; letter = reason (<b>D</b> diesel, <b>C</b> capacity, <b>B</b> too big, <b>N</b> never fits, <b>Z</b> no gain, <b>L</b> least-diesel plan)
+          <span class="c grid">grid</span> mains power
+          <span class="star">★</span> mandatory
+        </p>
+      </div>
+      <div id="banner"></div>
+      <div class="scroll" tabindex="0" role="region" aria-label="Roster table, scrolls sideways"><table id="board"></table></div>
+    </div>
+
+    <div id="reasons-wrap" class="card no-print">
+      <div class="board-head">
+        <h2>Why each shop is dark</h2>
+        <div id="filters" class="filters" role="group" aria-label="Filter reasons by rule"></div>
+      </div>
+      <p class="muted small">Select a ✗ on the roster to jump to its reason. Every reason is the solver's own text, with its numbers.</p>
       <ol id="reasons"></ol>
     </div>
   </section>
 
-  <footer class="muted no-print">This screen calls <code>POST /api/roster</code>, the same endpoint any market can use. Runs fully offline.</footer>
+  <footer class="muted small no-print">This screen calls <code>POST /api/roster</code>, the same endpoint any market can use. Nothing here computes the roster, and nothing loads from the internet.</footer>
   <script src="/app.js"></script>
 </body>
 </html>

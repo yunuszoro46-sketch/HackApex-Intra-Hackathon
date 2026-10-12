@@ -25,7 +25,23 @@
 
 - `node src/cli.js` exits 0 on the sample and 1 on `{`.
 - `sh outputs/make.sh` and `sh evidence/run.sh` reproduce the committed files exactly (`git diff` is clean).
-- The screen was checked with headless Chromium (Playwright, from a scratch script that is not in the repository):
+- **Screen redesign (`DESIGN_SYSTEM.md`):** checked against the real API with headless Chromium (Playwright, from a scratch script that is not in the repository). **22 of 22 checks passed:**
+  - idle state shown before any result;
+  - sample: metrics match the API (186; 16.40 / 17.00 L; peak 20 / 20 kW);
+  - board cells match the API (41 powered, 43 dark); 36 grid cells; one chart bar per outage hour; every ✗ has a reason letter;
+  - Enter on a focused ✗ selects its reason; the capacity filter shows only capacity reasons;
+  - the downloaded JSON equals the API response; print to A4 PDF is 1 page;
+  - editing the input shows the stale-result note, and Compute makes a new API call and clears it;
+  - the loading state is shown while the request runs;
+  - an infeasible input shows the best-effort banner and never "OK";
+  - invalid input names the field and shows no board;
+  - a failed request shows Try again, and retrying recovers;
+  - no page-wide sideways scroll at 390 px;
+  - only localhost requests;
+  - no console errors apart from the expected 400 and the deliberately aborted request.
+
+  Light, dark, infeasible, print and 390 px screenshots were reviewed by eye.
+- Earlier screen version, same method:
   - the sample shows OK, 186 and 16.40 / 17.00 L;
   - clicking a ✗ shows its reason;
   - download gives the same JSON;

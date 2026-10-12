@@ -49,7 +49,7 @@ node src/cli.js inputs/sample_input.json
 | Independent rule checker, run on every answer before it is sent | `src/solver/check.js` |
 | Pipeline used by the API and the CLI | `src/solver/index.js` |
 | HTTP server (`POST /api/roster` and the screen) | `src/server.js` |
-| Screen | `public/index.html`, `public/app.js`, `public/styles.css` (`app.js` calls `POST /api/roster`) |
+| Screen | `public/index.html`, `public/app.js`, `public/styles.css` (`app.js` calls `POST /api/roster`); design tokens and rules in `DESIGN_SYSTEM.md` |
 
 ## How it decides (short version)
 
