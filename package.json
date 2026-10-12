@@ -1,0 +1,12 @@
+{
+  "name": "who-stays-on",
+  "version": "1.0.0",
+  "description": "Generator roster for Shapla Shopping Complex during load shedding: exact optimal schedule, POST /api/roster, offline.",
+  "license": "MIT",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/"
+  }
+}
