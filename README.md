@@ -2,6 +2,10 @@
 
 # Who Stays On?
 
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge&logo=render)](https://hackapex-intra-hackathon-6d7w.onrender.com/)
+
+
 **Generator rosters for load-shedding days: provably the best plan, with a reason for every shop that stays dark.**
 
 ![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-339933) ![Dependencies: none](https://img.shields.io/badge/dependencies-none-1e40af) ![Tests: 39 passing](https://img.shields.io/badge/tests-39%20passing-166534) ![Runs offline](https://img.shields.io/badge/runs-offline-b45309)
