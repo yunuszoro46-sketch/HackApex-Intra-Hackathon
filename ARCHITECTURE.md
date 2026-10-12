@@ -39,13 +39,17 @@ There are no dependencies and no database. Every request is computed from scratc
 ### Order of work for one request
 
 1. **Obvious impossibilities:** mandatory kW > capacity, or a never-fitting shop inside an outage block longer than K.
-2. **`solveMinFuel`:** the least diesel that keeps capacity, mandatory and dark-run rules. If none exists, or it is over budget, the answer is **infeasible (proven)**. Otherwise its roster is a valid first floor.
-3. **Quick pass:** a beam of 300 labels per hour finds a good roster quickly.
+2. **Quick pass:** a beam of 300 labels per hour finds a good roster quickly.
+3. **`solveMinFuel`:** runs only if the quick pass found nothing.
+   - It finds the least diesel that keeps the capacity, mandatory and dark-run rules, with the budget as a cut-off: a partial plan is dropped once its diesel plus the least the remaining hours could burn exceeds the budget.
+   - If nothing survives, the answer is **infeasible (proven)**. The exact minimum is then computed for the explanation if it finishes within 3 s; otherwise the explanation says "more than the budget".
+   - If a plan survives, it is a valid roster and the first floor for the exact pass.
+   - It checks its deadline inside each hour as well as between hours.
 4. **Exact pass:** every non-dominated label is kept. A label is skipped only if its value plus an optimistic bound cannot reach the floor.
    - The bound is the best value per remaining hour at each fuel cost, ignoring the dark-run rule, combined over the remaining diesel by a knapsack in hundredths.
    - Ignoring a rule can only over-estimate, so nothing optimal is cut.
    - Completing this pass proves optimality: `"optimal": true`.
-5. **Guard:** if the exact pass would exceed 2.5 million labels in an hour or the 7 s time allowance, the best roster from the quick passes is returned with `"optimal": false`. It is never called optimal.
+5. **Guard:** if the exact pass would exceed 2.5 million labels in an hour or the 6 s time allowance (plus up to 0.7 s for a wider fallback pass), the best roster from the quick passes is returned with `"optimal": false`. It is never called optimal.
 
 ### Measured on this machine (Node 22, CLI wall time including Node start-up, 12 Oct 2026)
 
@@ -55,7 +59,7 @@ There are no dependencies and no database. Every request is computed from scratc
 | Sample | 186, 16.40 L | ~0.6 s |
 | Sample + 16:00 outage | infeasible, needs 17.60 L | ~0.1-0.5 s |
 | Evidence input (10 outage hours, 12 small shops, 22 L) | 403 | ~2-3 s |
-| Harder synthetic variants (K = 3, or budget exactly at the minimum) | — | up to ~5.3 s |
+| Seeded random stress test, `node tools/fuzz.js 777 150` and `node tools/fuzz.js 20261012 150` (300 inputs, up to 12 shops, K 1-3) | 150 ok / 150 infeasible; 1 answer not proven (`optimal: false`) | up to 6.7 s |
 
 ## Reasons (`src/solver/explain.js`)
 

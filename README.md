@@ -77,20 +77,37 @@ The solver plans the whole day at once, never hour by hour. Hour-by-hour greedy 
 npm test
 ```
 
-There are 24 tests, all using Node's built-in test runner:
+There are 32 tests, all using Node's built-in test runner:
 
 - the brief's worked example: value 84 using exactly 8.00 L, matching the brief;
 - the official sample: value 186;
 - 300 random small markets compared against a brute-force solver (`tools/brute.js`);
 - the independent checker against the brief's published roster and broken copies of it;
 - every invalid-input case;
-- HTTP boundary and adversarial cases.
+- HTTP boundary and adversarial cases;
+- fuel thresholds, grid resets of dark runs, and repeated requests.
+
+A seeded random stress test on full-size inputs takes minutes, so it is not part of `npm test`:
+
+```bash
+node tools/fuzz.js 777 150
+```
 
 ## Outputs and evidence
 
 - **`outputs/sample_output.json`:** our answer for the official sample. Regenerate it with `sh outputs/make.sh` while the server runs.
 - **Minute-150 update:** save the official updated file as **`inputs/minute150_input.json`**, then run `sh outputs/make.sh`. This writes `outputs/minute150_output.json`, computed from scratch.
-- **`evidence/`:** a real input that crashed an earlier version (out of memory), that version's captured failure, the fixed output, and a boundary pair (budget exactly 17.60 L vs 17.59 L). Replay them with `sh evidence/run.sh`. Details are in `evidence/README.md`.
+- **`evidence/`:** two real inputs that broke earlier versions, each with that version's captured failure and the fixed output:
+  - one ran out of memory;
+  - one took 21 s and wrongly answered "infeasible".
+
+  Plus a boundary pair (budget exactly 17.60 L vs 17.59 L). Replay them with `sh evidence/run.sh`. Details are in `evidence/README.md`.
+
+## Not yet done or not verifiable here
+
+- **Minute-150 input:** not received yet. Save it as `inputs/minute150_input.json`, then run `sh outputs/make.sh` with the server running.
+- **`schema.md`, `example_output.json` and the official validator:** not supplied. Our output fields follow the brief's wording and are checked by our own independent checker, not the official one.
+- **Hardest random inputs:** on 300 seeded random inputs, one answer was not proven optimal, and it is labelled `"optimal": false`. See `KNOWN_ISSUES.md`.
 
 ## Project layout
 

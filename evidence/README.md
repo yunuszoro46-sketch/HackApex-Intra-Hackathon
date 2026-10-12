@@ -27,6 +27,33 @@ Set `PORT` if the server is not on 3000. The script rewrites the output files; `
 
 The regression is kept as an automated test: `tests/api.test.js`, "regression input … answers optimally instead of crashing".
 
+## 1b. A second input that broke the app: `regression_timeout/`
+
+Found during the submission audit by a seeded random stress test (`node tools/fuzz.js 777 150`, an early version of it).
+
+| File | What it is |
+|---|---|
+| `input_fuzz_case77.json` | 12 normal shops, 25 kW generator, dark limit 3, outages in every hour except 15:00, 21.57 L of diesel. A valid roster exists: the least diesel that keeps every rule is 12.93 L |
+| `before_output_commit_9c7adcb.txt` | What commit `9c7adcb` answered through the API: `infeasible` with `"proven": false` ("search hit its time limit"), after **21.2 s**. That is two failures: over the 10 s limit, and a wrong status for a day that has a roster |
+| `after_output.json` | The fixed version (commit `a907b84` and later) through the API: `ok`, value **304**, 21.12 L, `"optimal": true`, in about 0.7-3.6 s |
+
+**Cause:**
+
+1. The least-diesel search ran first, and it checked its deadline only between hours. One hour of it alone ran for more than a minute.
+2. When it finally stopped, the quick search had no time left and found nothing, so the answer fell through to "infeasible, not proven".
+3. The explanation step then ran the same search again.
+
+**Fix (`src/solver/solve.js`, `src/solver/diagnose.js`):**
+
+1. The quick search runs first.
+2. The least-diesel search runs only when the quick search finds nothing. It checks its deadline inside each hour, and it drops any partial plan that can no longer finish within the budget, which proves "infeasible" much faster.
+3. The explanation step reuses the result instead of running the search again.
+4. The time limits were tightened (6 s of search plus a 0.7 s fallback).
+
+After the fix, `node tools/fuzz.js` on two seeds (777 and 20261012, 150 random twelve-shop-sized markets each) answered every input within 6.7 s. All answers but one were proven; that one is labelled `"optimal": false`.
+
+The regression is an automated test: `tests/api.test.js`, "regression (fuzz case 77) …".
+
 ## 2. Boundary check: `boundary/`
 
 The official sample with 16:00 also turned into an outage, one plausible minute-150 change. Keeping every shop within 2 dark hours in a row then needs **exactly 17.60 L** at minimum.
@@ -40,12 +67,17 @@ This shows the diesel rule is applied in whole hundredths with no rounding toler
 
 ## 3. How we test in general
 
-- **`npm test`** runs 24 tests:
+- **`npm test`** runs 32 tests:
   - the brief's worked example: 84 at 8.00 L, matching the brief;
   - the official sample: 186;
   - 300 random small markets compared against an independent brute-force solver (`tools/brute.js`);
   - our rule checker against the brief's published roster and seven kinds of broken copies;
   - every invalid-input case naming its field;
-  - HTTP boundary and adversarial cases.
+  - HTTP boundary and adversarial cases;
+  - fuel thresholds;
+  - grid resets of the dark-hour run;
+  - more broken-roster and invalid-input cases;
+  - repeated requests on one server.
+- **`node tools/fuzz.js [seed] [count]`** runs a seeded random stress test on full-size inputs. It takes minutes, so it is not part of `npm test`. It is a random sample, not an exhaustive proof.
 - **On every answer:** the API itself runs the independent checker (`src/solver/check.js`) before sending an `ok` roster. If a rule were ever broken, it would return an error instead of a wrong roster.
 - **During planning**, separately from these tests, an independent integer-programming model (SciPy/HiGHS) agreed with our values: 84, 186, and infeasible for both plausible minute-150 changes.

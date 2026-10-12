@@ -13,13 +13,28 @@
 
 ## Tests actually run
 
-**`npm test`:** 24 tests, 24 pass, 0 fail, 0 skipped, about 6 s (Node 22.22.0).
+**`npm test`:** 32 tests, 32 pass, 0 fail, 0 skipped, about 8 s (Node 22.22.0).
+
+**Submission audit (12 Oct 2026, about 11:20-11:45):**
+
+- Added `tests/audit.test.js` (7 tests):
+  - fuel thresholds: exactly at a level, between levels, zero load;
+  - one lookup on the combined load;
+  - capacity exactly full vs 1 kW over;
+  - a dark run reaching the limit, a grid hour resetting it, and the same shop infeasible without the reset (brute force agrees);
+  - more broken-roster mutants: duplicate, unknown id, missing shop, wrong `dark_hours`, slot twice, grid hour listed;
+  - 13 more invalid inputs;
+  - one server answering mixed requests with byte-identical repeats.
+- The audit tests passed against the existing solver: they found no defect there.
+- A seeded random stress test (`tools/fuzz.js`) **found a real defect**: a feasible day was answered "infeasible, not proven" after 21 s. Captured in `evidence/regression_timeout/` and fixed in `a907b84`.
+- After the fix, `node tools/fuzz.js 777 150` and `node tools/fuzz.js 20261012 150` answered all 300 inputs within 6.7 s. 299 answers were proven; 1 is labelled not proven.
 
 | File | Tests |
 |---|---|
 | `tests/solver.test.js` (8) | worked example 84 / 8.00 L; sample 186, checker-clean, under 10 s, reasons contain numbers; same input gives the same output; sample with a 16:00 outage is infeasible (needs 17.60 L) with a best-effort roster; no outages; no shops; **300 random small markets give the same value and the same feasibility as the brute-force oracle**; every reason's dark-streak and spare-diesel figures match an independent recount from the roster |
 | `tests/check_validate.test.js` (5) | the brief's published worked-example roster passes the checker; 8 broken copies and a 7.99 L budget are caught; 14 invalid inputs each name the right field; valid edge cases are accepted |
-| `tests/api.test.js` (11) | through HTTP: sample; non-JSON gives 400; budget boundary 17.60 ok / 17.59 infeasible; mandatory over capacity; mandatory-only diesel over budget; oversized shop in long vs short outage blocks; K = 0; K = 10; the regression input; adversarial 400s; 405 and 404 |
+| `tests/audit.test.js` (7) | see the audit note above |
+| `tests/api.test.js` (12, including the fuzz case 77 regression) | through HTTP: sample; non-JSON gives 400; budget boundary 17.60 ok / 17.59 infeasible; mandatory over capacity; mandatory-only diesel over budget; oversized shop in long vs short outage blocks; K = 0; K = 10; the regression input; adversarial 400s; 405 and 404 |
 
 **Manual checks:**
 
