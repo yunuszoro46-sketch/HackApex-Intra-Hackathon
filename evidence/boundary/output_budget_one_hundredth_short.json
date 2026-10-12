@@ -1,0 +1,404 @@
+{
+  "status": "infeasible",
+  "message": "No shop may be dark more than 2 hours in a row, and keeping to that needs at least 17.60 L of diesel (computed exactly over all 8 outage hours); the budget is 17.59 L, 0.01 L short.",
+  "conflicts": [
+    {
+      "rule": "fuel",
+      "shops": [
+        "tailor_jamal",
+        "mobile_shop",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "slots": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "detail": "No shop may be dark more than 2 hours in a row, and keeping to that needs at least 17.60 L of diesel (computed exactly over all 8 outage hours); the budget is 17.59 L, 0.01 L short."
+    }
+  ],
+  "roster": [],
+  "best_effort": {
+    "label": "Best effort, NOT a valid roster: it keeps the capacity, mandatory and dark-run rules with the least diesel possible, but needs 17.60 L against the 17.59 L budget.",
+    "breaks": "fuel",
+    "roster": [
+      {
+        "slot": 2,
+        "time": "12:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "tailor_jamal",
+          "photocopy",
+          "tea_stall",
+          "clothing"
+        ],
+        "dark": [
+          {
+            "id": "mobile_shop",
+            "reason": "Least-diesel plan: switching it on would lift 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "beauty_salon",
+            "reason": "Least-diesel plan: switching it on would lift 12:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "grocery_fridge",
+            "reason": "Least-diesel plan: switching it on would lift 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "electronics",
+            "reason": "Least-diesel plan: switching it on would lift 12:00 from 14 to 19 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "restaurant",
+            "reason": "Least-diesel plan: switching it on would lift 12:00 from 14 to 20 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "jewellery",
+            "reason": "Least-diesel plan: switching it on would lift 12:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          }
+        ],
+        "load_kw": 14,
+        "fuel_litres": 2,
+        "fuel_running_litres": 2
+      },
+      {
+        "slot": 3,
+        "time": "13:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "mobile_shop",
+          "restaurant"
+        ],
+        "dark": [
+          {
+            "id": "tailor_jamal",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "photocopy",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 16 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "tea_stall",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 15 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "beauty_salon",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "grocery_fridge",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "electronics",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 19 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "jewellery",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "clothing",
+            "reason": "Least-diesel plan: switching it on would lift 13:00 from 14 to 16 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          }
+        ],
+        "load_kw": 14,
+        "fuel_litres": 2,
+        "fuel_running_litres": 4
+      },
+      {
+        "slot": 4,
+        "time": "14:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "beauty_salon",
+          "grocery_fridge",
+          "electronics",
+          "jewellery"
+        ],
+        "dark": [
+          {
+            "id": "tailor_jamal",
+            "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 4 kW would make 24 kW."
+          },
+          {
+            "id": "mobile_shop",
+            "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 3 kW would make 23 kW."
+          },
+          {
+            "id": "photocopy",
+            "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 2 kW would make 22 kW."
+          },
+          {
+            "id": "tea_stall",
+            "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 1 kW would make 21 kW."
+          },
+          {
+            "id": "restaurant",
+            "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 6 kW would make 26 kW."
+          },
+          {
+            "id": "clothing",
+            "reason": "Capacity: 20 of 20 kW already in use at 14:00; adding 2 kW would make 22 kW."
+          }
+        ],
+        "load_kw": 20,
+        "fuel_litres": 2.8,
+        "fuel_running_litres": 6.8
+      },
+      {
+        "slot": 5,
+        "time": "15:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "tailor_jamal",
+          "photocopy",
+          "tea_stall",
+          "clothing"
+        ],
+        "dark": [
+          {
+            "id": "mobile_shop",
+            "reason": "Least-diesel plan: switching it on would lift 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "beauty_salon",
+            "reason": "Least-diesel plan: switching it on would lift 15:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "grocery_fridge",
+            "reason": "Least-diesel plan: switching it on would lift 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "electronics",
+            "reason": "Least-diesel plan: switching it on would lift 15:00 from 14 to 19 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "restaurant",
+            "reason": "Least-diesel plan: switching it on would lift 15:00 from 14 to 20 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "jewellery",
+            "reason": "Least-diesel plan: switching it on would lift 15:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          }
+        ],
+        "load_kw": 14,
+        "fuel_litres": 2,
+        "fuel_running_litres": 8.8
+      },
+      {
+        "slot": 6,
+        "time": "16:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "mobile_shop",
+          "restaurant"
+        ],
+        "dark": [
+          {
+            "id": "tailor_jamal",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "photocopy",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "tea_stall",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 15 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "beauty_salon",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "grocery_fridge",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "electronics",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 19 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "jewellery",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "clothing",
+            "reason": "Least-diesel plan: switching it on would lift 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          }
+        ],
+        "load_kw": 14,
+        "fuel_litres": 2,
+        "fuel_running_litres": 10.8
+      },
+      {
+        "slot": 7,
+        "time": "17:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "beauty_salon",
+          "grocery_fridge",
+          "electronics",
+          "jewellery"
+        ],
+        "dark": [
+          {
+            "id": "tailor_jamal",
+            "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 4 kW would make 24 kW."
+          },
+          {
+            "id": "mobile_shop",
+            "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 3 kW would make 23 kW."
+          },
+          {
+            "id": "photocopy",
+            "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 2 kW would make 22 kW."
+          },
+          {
+            "id": "tea_stall",
+            "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 1 kW would make 21 kW."
+          },
+          {
+            "id": "restaurant",
+            "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 6 kW would make 26 kW."
+          },
+          {
+            "id": "clothing",
+            "reason": "Capacity: 20 of 20 kW already in use at 17:00; adding 2 kW would make 22 kW."
+          }
+        ],
+        "load_kw": 20,
+        "fuel_litres": 2.8,
+        "fuel_running_litres": 13.6
+      },
+      {
+        "slot": 8,
+        "time": "18:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "tailor_jamal",
+          "photocopy",
+          "tea_stall",
+          "clothing"
+        ],
+        "dark": [
+          {
+            "id": "mobile_shop",
+            "reason": "Least-diesel plan: switching it on would lift 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "beauty_salon",
+            "reason": "Least-diesel plan: switching it on would lift 18:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "grocery_fridge",
+            "reason": "Least-diesel plan: switching it on would lift 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "electronics",
+            "reason": "Least-diesel plan: switching it on would lift 18:00 from 14 to 19 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "restaurant",
+            "reason": "Least-diesel plan: switching it on would lift 18:00 from 14 to 20 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "jewellery",
+            "reason": "Least-diesel plan: switching it on would lift 18:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          }
+        ],
+        "load_kw": 14,
+        "fuel_litres": 2,
+        "fuel_running_litres": 15.6
+      },
+      {
+        "slot": 9,
+        "time": "19:00",
+        "powered": [
+          "pharmacy",
+          "atm_booth",
+          "mobile_shop",
+          "restaurant"
+        ],
+        "dark": [
+          {
+            "id": "tailor_jamal",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "photocopy",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "tea_stall",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 15 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "beauty_salon",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 18 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "grocery_fridge",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "electronics",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 19 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "jewellery",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 17 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          },
+          {
+            "id": "clothing",
+            "reason": "Least-diesel plan: switching it on would lift 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h); even this plan needs 17.60 L against the 17.59 L budget."
+          }
+        ],
+        "load_kw": 14,
+        "fuel_litres": 2,
+        "fuel_running_litres": 17.6
+      }
+    ],
+    "value_total": 185,
+    "fuel_total_litres": 17.6,
+    "dark_hours": {
+      "pharmacy": 0,
+      "atm_booth": 0,
+      "tailor_jamal": 5,
+      "mobile_shop": 5,
+      "photocopy": 5,
+      "tea_stall": 5,
+      "beauty_salon": 6,
+      "grocery_fridge": 6,
+      "electronics": 6,
+      "restaurant": 5,
+      "jewellery": 6,
+      "clothing": 5
+    },
+    "capacity_kw": 20,
+    "fuel_budget_litres": 17.59
+  },
+  "proven": true
+}

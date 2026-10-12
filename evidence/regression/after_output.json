@@ -1,0 +1,316 @@
+{
+  "status": "ok",
+  "roster": [
+    {
+      "slot": 0,
+      "time": "10:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "grocery_fridge",
+        "restaurant",
+        "clothing"
+      ],
+      "dark": [
+        {
+          "id": "mobile_shop",
+          "reason": "Diesel: switching it on lifts 10:00 from 7 to 10 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "photocopy",
+          "reason": "Diesel: switching it on lifts 10:00 from 7 to 9 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "tea_stall",
+          "reason": "Diesel: switching it on lifts 10:00 from 7 to 8 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "beauty_salon",
+          "reason": "Diesel: switching it on lifts 10:00 from 7 to 9 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "electronics",
+          "reason": "Diesel: switching it on lifts 10:00 from 7 to 10 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "jewellery",
+          "reason": "Diesel: switching it on lifts 10:00 from 7 to 9 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        }
+      ],
+      "load_kw": 7,
+      "fuel_litres": 1.2,
+      "fuel_running_litres": 1.2
+    },
+    {
+      "slot": 1,
+      "time": "11:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tea_stall",
+        "grocery_fridge",
+        "restaurant",
+        "clothing"
+      ],
+      "dark": [
+        {
+          "id": "tailor_jamal",
+          "reason": "Diesel: switching it on lifts 11:00 from 7 to 8 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "mobile_shop",
+          "reason": "Diesel: switching it on lifts 11:00 from 7 to 10 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "photocopy",
+          "reason": "Diesel: switching it on lifts 11:00 from 7 to 9 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "beauty_salon",
+          "reason": "Diesel: switching it on lifts 11:00 from 7 to 9 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "electronics",
+          "reason": "Diesel: switching it on lifts 11:00 from 7 to 10 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "jewellery",
+          "reason": "Diesel: switching it on lifts 11:00 from 7 to 9 kW (1.20 -> 2.00 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        }
+      ],
+      "load_kw": 7,
+      "fuel_litres": 1.2,
+      "fuel_running_litres": 2.4
+    },
+    {
+      "slot": 2,
+      "time": "12:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "mobile_shop",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [],
+      "load_kw": 20,
+      "fuel_litres": 2.8,
+      "fuel_running_litres": 5.2
+    },
+    {
+      "slot": 3,
+      "time": "13:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [
+        {
+          "id": "mobile_shop",
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "electronics",
+          "reason": "Diesel: switching it on lifts 13:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        }
+      ],
+      "load_kw": 14,
+      "fuel_litres": 2,
+      "fuel_running_litres": 7.2
+    },
+    {
+      "slot": 4,
+      "time": "14:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [
+        {
+          "id": "mobile_shop",
+          "reason": "Diesel: switching it on lifts 14:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "electronics",
+          "reason": "Diesel: switching it on lifts 14:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        }
+      ],
+      "load_kw": 14,
+      "fuel_litres": 2,
+      "fuel_running_litres": 9.2
+    },
+    {
+      "slot": 5,
+      "time": "15:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "mobile_shop",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [],
+      "load_kw": 20,
+      "fuel_litres": 2.8,
+      "fuel_running_litres": 12
+    },
+    {
+      "slot": 6,
+      "time": "16:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "beauty_salon",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [
+        {
+          "id": "mobile_shop",
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 17 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "photocopy",
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "tea_stall",
+          "reason": "Diesel: switching it on lifts 16:00 from 14 to 15 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        }
+      ],
+      "load_kw": 14,
+      "fuel_litres": 2,
+      "fuel_running_litres": 14
+    },
+    {
+      "slot": 7,
+      "time": "17:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "mobile_shop",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [],
+      "load_kw": 20,
+      "fuel_litres": 2.8,
+      "fuel_running_litres": 16.8
+    },
+    {
+      "slot": 8,
+      "time": "18:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "mobile_shop",
+        "photocopy",
+        "tea_stall",
+        "beauty_salon",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "jewellery",
+        "clothing"
+      ],
+      "dark": [],
+      "load_kw": 20,
+      "fuel_litres": 2.8,
+      "fuel_running_litres": 19.6
+    },
+    {
+      "slot": 9,
+      "time": "19:00",
+      "powered": [
+        "pharmacy",
+        "atm_booth",
+        "tailor_jamal",
+        "mobile_shop",
+        "tea_stall",
+        "grocery_fridge",
+        "electronics",
+        "restaurant",
+        "clothing"
+      ],
+      "dark": [
+        {
+          "id": "photocopy",
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "beauty_salon",
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        },
+        {
+          "id": "jewellery",
+          "reason": "Diesel: switching it on lifts 19:00 from 14 to 16 kW (2.00 -> 2.80 L/h), so the day would need 22.40 L of the 22.00 L budget; that diesel is used in other hours of the plan."
+        }
+      ],
+      "load_kw": 14,
+      "fuel_litres": 2,
+      "fuel_running_litres": 21.6
+    }
+  ],
+  "value_total": 403,
+  "fuel_total_litres": 21.6,
+  "dark_hours": {
+    "pharmacy": 0,
+    "atm_booth": 0,
+    "tailor_jamal": 1,
+    "mobile_shop": 5,
+    "photocopy": 4,
+    "tea_stall": 2,
+    "beauty_salon": 3,
+    "grocery_fridge": 0,
+    "electronics": 4,
+    "restaurant": 0,
+    "jewellery": 3,
+    "clothing": 0
+  },
+  "capacity_kw": 20,
+  "fuel_budget_litres": 22,
+  "optimal": true
+}
