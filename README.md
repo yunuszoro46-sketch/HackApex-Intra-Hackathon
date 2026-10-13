@@ -1,6 +1,6 @@
 # HackApex-Intra-Hackathon
 
-# Who Stays On?
+# StayOn
 
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge&logo=render)](https://hackapex-intra-hackathon-6d7w.onrender.com/)
@@ -8,11 +8,11 @@
 
 **Generator rosters for load-shedding days: provably the best plan, with a reason for every shop that stays dark.**
 
-![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-339933) ![Dependencies: none](https://img.shields.io/badge/dependencies-none-1e40af) ![Tests: 39 passing](https://img.shields.io/badge/tests-39%20passing-166534) ![Runs offline](https://img.shields.io/badge/runs-offline-b45309)
+![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-339933) ![Dependencies: none](https://img.shields.io/badge/dependencies-none-1e40af) ![Tests: 39 passing](https://img.shields.io/badge/tests-39%20passing-22c55e)
 
-Shapla Shopping Complex has one 20 kW generator, 17 litres of diesel and twelve shops that together want almost 40 kW. On a load-shedding day someone has to decide, for every hour without grid power, which shops stay on.
+Shapla Shopping Complex has one 20 kW generator, 17 litres of diesel and twelve shops that together want almost 40 kW. On a load-shedding day someone has to decide, for every hour without grid power, which shops to keep on and which to leave dark.
 
-Who Stays On? makes that decision for the whole day at once. Its roster:
+StayOn makes that decision for the whole day at once. Its roster:
 
 - never overloads the generator;
 - never runs out of diesel;
@@ -20,7 +20,7 @@ Who Stays On? makes that decision for the whole day at once. Its roster:
 - never leaves another shop dark for more than the allowed number of hours in a row;
 - serves the most value possible within those rules, and proves it.
 
-Every dark hour gets a reason with real numbers. When no roster can keep every rule, the app says which rule fails and by how much, for example *"needs at least 17.60 L of diesel; the budget is 17.00 L, 0.60 L short"*.
+Every dark hour gets a reason with real numbers. When no roster can keep every rule, the app says which rule fails and by how much, for example *"needs at least 17.60 L of diesel; the budget is 17.59 L, so it is 0.01 L short."*
 
 ![The dashboard on the official sample](docs/images/dashboard-sample.png)
 
@@ -132,7 +132,7 @@ What the result shows:
 
   ![Load and diesel charts](docs/images/charts.png)
 
-- **Roster board:** one row per shop, one column per hour; ✓ powered, ✗ dark with a reason letter (D diesel, C capacity, B too big, N never fits, Z no gain, L least-diesel plan), grey "grid" for mains hours, ★ for mandatory shops; footer rows for load, diesel per hour and running total.
+- **Roster board:** one row per shop, one column per hour; ✓ powered, ✗ dark with a reason letter (D diesel, C capacity, B too big, N never fits, Z no gain, L least-diesel plan), grey "grid" ...
 
   ![Roster board](docs/images/board.png)
 
@@ -180,7 +180,7 @@ flowchart LR
   X --> L
 ```
 
-Only `solve.js` makes decisions; every other step prepares, checks, explains or shows. The screen never computes a roster: it sends the same request any other market's system could send, and draws the answer.
+Only `solve.js` makes decisions; every other step prepares, checks, explains or shows. The screen never computes a roster: it sends the same request any other market's system could send, and draws the returned board and reasons.
 
 | Step | File | Job |
 |---|---|---|
@@ -200,7 +200,7 @@ Only `solve.js` makes decisions; every other step prepares, checks, explains or 
 
 ## How the solver decides
 
-Powering the most valuable shops hour by hour fails, as the brief warns: it spends the diesel at noon and starves the same cheap shop until the three-hour rule breaks. Who Stays On? plans the whole day as one plan.
+Powering the most valuable shops hour by hour fails, as the brief warns: it spends the diesel at noon and starves the same cheap shop until the three-hour rule breaks. StayOn plans the whole day at once.
 
 **The model.** For each shop *s* and outage hour *t*, decide *x(s, t)* = on or off, to
 
@@ -213,12 +213,12 @@ Powering the most valuable shops hour by hour fails, as the brief warns: it spen
 **The method: an exact layered dynamic programme.**
 
 1. **State.** The only thing the past forces on the future is how long each normal shop has been dark. That vector of dark runs is the state (up to 3¹⁰ = 59,049 states for the sample).
-2. **Pareto labels.** For each state, keep every plan that is not beaten on both value and diesel. A plan is dropped only if another plan at the same state has at least as much value and no more diesel, so the best plan is never lost.
-3. **Transitions.** Each hour, try every group of shops that includes all shops already dark *K* hours, fits beside the mandatory shops, and is **"full" for its fuel level**. If a shop still fits without moving to a dearer fuel level, adding it costs no diesel and only helps, so the best plan never leaves it out. This cuts 444 valid groups per hour to 148 in the sample.
+2. **Pareto labels.** For each state, keep every plan that is not beaten on both value and diesel. A plan is dropped only if another plan at the same state has at least as much value and no more diesel.
+3. **Transitions.** Each hour, try every group of shops that includes all shops already dark *K* hours, fits beside the mandatory shops, and is **"full" for its fuel level**. If a shop still fits without raising the fuel level, it is kept on.
 4. **Order of work.**
    - A quick pass keeps the 300 most promising plans per hour and finds a good valid roster fast.
    - If it finds nothing, a least-diesel search, which drops any plan that can no longer finish within the budget, proves whether any roster exists.
-   - The exact pass then searches everything that could still beat the best roster found, skipping branches with an optimistic bound (best value per hour at each fuel cost, ignoring the dark rule, combined by a small knapsack over the remaining diesel).
+   - The exact pass then searches everything that could still beat the best roster found, skipping branches with an optimistic bound (best value per hour at each fuel cost, ignoring the dark rule).
    - Finishing the exact pass proves the answer is the best: `"optimal": true`.
 5. **Time guard.** After 6 s of search (plus a 0.7 s wider fallback), the best roster found is returned labelled `"optimal": false`. It is never presented as proven.
 
@@ -234,7 +234,7 @@ Powering the most valuable shops hour by hour fails, as the brief warns: it spen
 
 ```bash
 curl -s -X POST -H 'content-type: application/json' \
-     --data @inputs/sample_input.json http://localhost:3000/api/roster
+      --data @inputs/sample_input.json http://localhost:3000/api/roster
 ```
 
 **Input** (an excerpt of `inputs/sample_input.json`, which has twelve shops):
@@ -261,7 +261,7 @@ curl -s -X POST -H 'content-type: application/json' \
 
 | Status | HTTP | Main fields |
 |---|---|---|
-| `ok` | 200 | `roster` (per outage hour: `slot`, `time`, `powered`, `dark` [{`id`, `reason`}], `load_kw`, `fuel_litres`, `fuel_running_litres`), `value_total`, `fuel_total_litres`, `dark_hours`, `capacity_kw`, `fuel_budget_litres`, `optimal` |
+| `ok` | 200 | `roster` (per outage hour: `slot`, `time`, `powered`, `dark` [{`id`, `reason`}], `load_kw`, `fuel_litres`, `fuel_running_litres`), `value_total`, `fuel_total_litres`, `dark_hours`, `optimal` |
 | `infeasible` | 200 | `message`, `conflicts` [{`rule`, `shops`, `slots`, `detail`}], `roster: []`, `best_effort` (labelled, or `null`), `proven` |
 | `invalid_input` | 400 | `field` (e.g. `shops[3].kw`), `message` |
 | error | 405 / 404 / 500 | wrong method, unknown path, or an internal check failure (a roster that breaks a rule is never sent) |
@@ -315,7 +315,6 @@ Each reason also states the shop's current dark streak and the limit, e.g. *"Dar
 
 ![Infeasible message with the exact diesel shortfall](docs/images/infeasible-message.png)
 
-
 1. mandatory shops need more kW than the generator carries;
 2. a shop that can never fit sits inside an outage longer than the dark limit;
 3. the mandatory shops alone burn more diesel than the budget;
@@ -332,10 +331,10 @@ npm test     # 39 tests, all passing (Node's built-in test runner)
 
 | Test file | What it covers |
 |---|---|
-| `tests/solver.test.js` (8) | Worked example 84 / 8.00 L; sample 186; determinism; infeasible 16:00 case; empty days; **300 random markets compared with a brute-force solver**; reason numbers recounted from the roster |
+| `tests/solver.test.js` (8) | Worked example 84 / 8.00 L; sample 186; determinism; infeasible 16:00 case; empty days; **300 random markets compared with a brute-force solver**; reason numbers re-check |
 | `tests/check_validate.test.js` (5) | The checker accepts the brief's published roster and catches broken copies; every invalid-input case names its field |
 | `tests/audit.test.js` (7) | Fuel thresholds; capacity exactly full vs 1 kW over; dark-run limit and grid reset; more broken-roster and invalid-input cases; repeated requests on one server |
-| `tests/api.test.js` (12) | Through real HTTP: sample, boundary 17.60 / 17.59, capacity and fuel infeasibility, oversized shops, K = 0 and K = 10, both bug regressions, adversarial input, 405 / 404 |
+| `tests/api.test.js` (12) | Through real HTTP: sample, boundary 17.60 / 17.59, capacity and fuel infeasibility, oversized shops, K = 0 and K = 10, both bug regressions, adversarial input, 405 / 404 / 500 checks |
 | `tests/form.test.js` (7) | The form converts to exactly the API input; strict number parsing; rule checks left to the server; add/remove rows; import refusals |
 
 Beyond `npm test`:
@@ -344,7 +343,7 @@ Beyond `npm test`:
 - **Brute-force oracle** (`tools/brute.js`): tries every possible roster on small inputs; the solver matched it on 300 random markets.
 - **Seeded stress test** (`tools/fuzz.js`): random twelve-shop markets; found a real bug (see below). It is a random sample, not an exhaustive proof.
 - **Integer-programming cross-check** during planning (SciPy/HiGHS) agreed with our values: 84, 186, and infeasible for both likely minute-150 changes.
-- **Browser checks** (headless Chromium, desktop and 390 px phone width, light and dark): 28 of 28 passed. They covered the empty form being blocked, the sample matching the API, a keyboard toggle leading to infeasible, a duplicate ID outlined, one request per double-click, download equal to the API answer, a one-page print, network-failure retry, and no sideways scroll.
+- **Browser checks** (headless Chromium, desktop and 390 px phone width, light and dark): 28 of 28 passed. They covered the empty form being blocked, the sample matching the API, a keyboard toggling bug, and the print layout.
 
 ---
 
@@ -354,8 +353,8 @@ All evidence runs against the real API: start the server, then `sh evidence/run.
 
 | Folder | What broke | Before | After |
 |---|---|---|---|
-| `evidence/regression/` | All ten hours out with twelve small shops: the search kept tens of millions of plans | Commit `41cf264`: server **killed for using 5.9 GB of memory**, no answer | Value 403, proven best, about 2 s. Fixed with "full" groups, the optimistic bound, the least-diesel check and memory/time guards |
-| `evidence/regression_timeout/` | A random stress test found a valid day the app got wrong | Commit `9c7adcb`: **"infeasible, not proven" after 21.2 s** (least diesel needed was only 12.93 L of 21.57 L) | Value 304, proven best, under 4 s. Fixed by running the quick pass first, checking the deadline inside each hour and adding a budget cut-off |
+| `evidence/regression/` | All ten hours out with twelve small shops: the search kept tens of millions of plans | Commit `41cf264`: server **killed for using 5.9 GB of memory**, no answer | Value **403**, 21.60 L of 22.00 L, `"optimal": true`, in about 2 s |
+| `evidence/regression_timeout/` | A random stress test found a valid day the app got wrong | Commit `9c7adcb`: **"infeasible, not proven" after 21.2 s** (least diesel needed was only 12.93 L of 25.00 L) | Value **304**, 21.12 L, `"optimal": true`, in about 0.7-3.6 s |
 | `evidence/boundary/` | Boundary check, not a bug | — | Budget 17.60 L → OK, uses exactly 17.60 L; budget 17.59 L → infeasible, "0.01 L short" |
 
 Both bugs are also automated regression tests in `tests/api.test.js`.
@@ -384,7 +383,8 @@ who-stays-on/
 ├── evidence/                regression and boundary evidence + run.sh
 ├── tests/                   npm test (39 tests)
 ├── tools/                   brute.js (oracle), fuzz.js (stress test)
-└── docs/images/             architecture and screenshots for this README
+├── docs/images/             architecture and screenshots for this README
+└── README.md
 ```
 
 ---
@@ -393,10 +393,10 @@ who-stays-on/
 
 We list these openly; see [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) for the full table.
 
-- **Official schema not supplied.** `schema.md`, `example_output.json` and the official validator were not in our pack. Output fields follow the brief's wording; if the official format differs, only `src/solver/serialize.js` changes.
-- **Minute-150 output.** Save the official updated input as `inputs/minute150_input.json`, then run `sh outputs/make.sh` with the server running. Both likely changes (16:00 or 11:00 becoming an outage) need at least 17.60 L, so with 17.00 L they are infeasible.
+- **Official schema not supplied.** `schema.md`, `example_output.json` and the official validator were not in our pack. Output fields follow the brief's wording; if the official format differs, our screen may need updates.
+- **Minute-150 output.** Save the official updated input as `inputs/minute150_input.json`, then run `sh outputs/make.sh` with the server running. Both likely changes (16:00 or 11:00 becoming an outage) are supported.
 - **One rule reading is unconfirmed.** A normal shop bigger than the generator, inside an outage longer than the dark limit, makes the day infeasible under our reading of rules 3 and 6.
-- **Very hard inputs.** On 300 random hard markets, one answer was not proven best within the time guard; it is labelled `"optimal": false`. A machine much slower than ours could approach the 10 s limit.
+- **Very hard inputs.** On 300 random hard markets, one answer was not proven best within the time guard; it is labelled `"optimal": false`. A machine much slower than ours could approach the 10 second limit.
 - **Diesel reasons** give exact litres but do not name which other shop got the diesel; proving that needs a re-solve per dark cell.
 - **Browsers.** The screen was tested in Chromium; Firefox and Safari were not part of the automated checks.
 
@@ -416,7 +416,7 @@ We list these openly; see [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) for the full tabl
 | `33206ca` | Reasons state each shop's real dark streak and spare diesel |
 | `9c7adcb` | Dashboard redesign: status chip, key numbers, charts, reason filters, loading/error states, dark mode |
 | `a907b84` | Fix: valid day answered "infeasible" after 21 s; audit tests; seeded stress test; second evidence set |
-| `ccf79b5` | Documentation: audit results, limits, open items |
+| `ccf79c5` | Documentation: audit results, limits, open items |
 | `a3f3cd1` | Manual input form replaces the JSON box; form conversion tests; no solver change |
 
 ---
@@ -433,4 +433,4 @@ We list these openly; see [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) for the full tabl
 | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md), [`IDEA_TO_ACTION.md`](IDEA_TO_ACTION.md) | The original plan |
 | [`AI_HANDOFF.md`](AI_HANDOFF.md) | Ground rules for anyone continuing the work |
 
-Built for the *Who Stays On?* hackathon challenge (Shapla Shopping Complex, Mirpur). No AI or cloud service runs inside the app; scheduling, arithmetic and checks are deterministic and offline.
+Built for the *StayOn* hackathon challenge (Shapla Shopping Complex, Mirpur). No AI or cloud service runs inside the app; scheduling, arithmetic and checks are deterministic and offline.
