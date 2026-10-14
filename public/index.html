@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Who Stays On? Generator roster</title>
+  <title>StayOn | Generator roster</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="top">
     <div class="brand">
-      <h1>Who Stays On?</h1>
+      <h1>StayOn</h1>
       <p class="sub">Generator roster for load-shedding hours: which shops stay powered, how much diesel it takes, and why each shop is dark.</p>
     </div>
     <div class="top-right">
@@ -55,7 +55,7 @@
 
     <fieldset class="sec" data-field="fuel_table">
       <legend>C. Fuel table</legend>
-      <p class="muted small">Each outage hour, all powered shops' kW are added up and rounded up to the first row whose load is at least that much; that row's litres are charged once for the hour. Zero load uses no diesel. Loads must increase down the table and the last load must equal the generator capacity.</p>
+      <p class="muted small">Each outage hour, all powered shops' kW are added up and rounded up to the first row whose load is at least that much; that row's litres are charged once for the hour.</p>
       <div class="scroll"><table class="edit" id="fuel-table"><thead><tr><th scope="col">Up to load (kW)</th><th scope="col">Litres per hour</th><th scope="col"><span class="visually-hidden">Remove</span></th></tr></thead><tbody></tbody></table></div>
       <button type="button" id="btn-add-fuel" class="small-btn">Add fuel row</button>
     </fieldset>
@@ -63,7 +63,7 @@
     <fieldset class="sec" data-field="shops">
       <legend>D. Shops <span class="muted small" id="shop-summary"></span></legend>
       <p class="muted small"><b>Mandatory</b> shops (marked ★) are on in every outage hour. Values are what it is worth to have the shop on in each hour (whole numbers, 0 or more). At most 12 shops.</p>
-      <div class="scroll" tabindex="0" role="region" aria-label="Shop table, scrolls sideways"><table class="edit" id="shop-table"><thead><tr><th scope="col" class="name">Shop ID</th><th scope="col">kW</th><th scope="col">Type</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll" tabindex="0" role="region" aria-label="Shop table, scrolls sideways"><table class="edit" id="shop-table"><thead><tr><th scope="col" class="name">Shop ID</th><th scope="col">kW</th><th scope="col">Type</th><th scope="col">Value per hour</th></tr></thead><tbody></tbody></table></div>
       <button type="button" id="btn-add-shop" class="small-btn">Add shop</button>
     </fieldset>
 
@@ -81,7 +81,7 @@
     </details>
   </form>
 
-  <div id="stale" class="stale-note no-print" role="status" hidden>The form has changed since this result was computed. The result below belongs to the previous input. Press <b>Generate roster</b> to recalculate.</div>
+  <div id="stale" class="stale-note no-print" role="status" hidden>The form has changed since this result was computed. The result below belongs to the previous input. Press <b>Generate roster</b> again to update it.</div>
 
   <section id="result" hidden aria-labelledby="board-title">
     <div id="metrics" class="metrics"></div>
